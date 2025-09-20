@@ -1,5 +1,8 @@
 # Install minimal prerequisites (Ubuntu 18.04 as reference)
 sudo apt update && sudo apt install -y cmake g++ wget unzip make
+
+# Create lib folder
+mkdir ../libs && cd ../libs
  
 # Download and unpack sources
 wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip
