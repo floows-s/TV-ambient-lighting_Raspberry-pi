@@ -18,9 +18,21 @@
     <ClCompile Include="..\Source\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\ZoneManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Zone.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Source\ZoneManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\Source\Zone.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
