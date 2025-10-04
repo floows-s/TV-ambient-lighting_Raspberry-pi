@@ -39,6 +39,8 @@ int main() {
 		std::cout << "FPS: " << vCap.get(cv::CAP_PROP_FPS) << std::endl;
 	}
 
+
+	vCap.release();
 	return 0;
 }
 

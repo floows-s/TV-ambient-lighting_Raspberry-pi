@@ -24,7 +24,7 @@
     <ClCompile Include="..\Source\ZoneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Source\Color.h" />
+    <ClInclude Include="..\Source\Dimensions.h" />
     <ClInclude Include="..\Source\Zone.h" />
     <ClInclude Include="..\Source\ZoneManager.h" />
   </ItemGroup>
