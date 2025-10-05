@@ -11,7 +11,7 @@ public:
 
 	// Methods
 	cv::Scalar calculate(cv::Mat& frame);
-	void draw(cv::Mat& frame);
+	void draw(cv::Mat& frame, bool includeAverageColor = false);
 
 	// Getters & setters
 	unsigned int getWidth() { return m_dimensions.width; }
@@ -33,4 +33,3 @@ private:
 	cv::Scalar m_drawingColor;
 	cv::Point m_origin; 
 };
-

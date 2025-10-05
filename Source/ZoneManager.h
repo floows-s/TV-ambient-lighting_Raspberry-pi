@@ -1,41 +1,49 @@
 #pragma once
+#include <map>
 
-#include <Zone.h>
+#include "Zone.h"
+#include "LEDCounts.h"
+
 #include <opencv2/core.hpp>
 
 
 class ZoneManager
 {
 public:
-	// Constructor & destructor
-	ZoneManager(unsigned int frameWidth, unsigned int frameHeight, LEDCounts LEDCounts);
+	// Constructor
+	ZoneManager(Dimensions frameDimensions, LEDCounts LEDCounts);
 
 	// Methods
 	void calculate(cv::Mat& frame);
-	void draw(cv::Mat& frame);
+	void draw(cv::Mat& frame, bool includeAverageColor = false);
 
 	// Getters & setters
-	std::vector<Zone> getZones() { return m_zones; }
-	unsigned int getFrameWidth() { return m_frameWidth; }
-	unsigned int getFrameHeight() { return m_frameHeight; }
+	std::map<ZoneSide, std::vector<Zone>> getZones(ZoneSide side) { return m_zones; }
+	std::vector<Zone> getZonesBySide(ZoneSide side) { return m_zones[side]; }
+
+	unsigned int getFrameWidth() { return m_frameDimensions.width; }
+	unsigned int getFrameHeight() { return m_frameDimensions.height; }
 
 private:
-	void updateZoneDimension(unsigned int frameWidth, unsigned int frameHeight);
-	void calculateVerticalZone (unsigned int frameWidth, unsigned int frameHeight);
+	void updateZoneDimension();
+	Dimensions calculateVerticalZoneDimensions (int LEDCount);
+	Dimensions calculateHorizontalZoneDimensions (int LEDCount);
 
-	unsigned int m_frameWidth;
-	unsigned int m_frameHeight;
-
+	Dimensions m_frameDimensions;
 	LEDCounts m_LEDCounts;
 
-	std::vector<Zone> m_zones;
-
+	std::map<ZoneSide, std::vector<Zone>> m_zones = { // Init with empty values
+		{ ZoneSide::TOP, {}},
+		{ ZoneSide::BOTTOM, {}},
+		{ ZoneSide::LEFT, {}},
+		{ ZoneSide::RIGHT, {}}
+	};
 };
 
-struct LEDCounts {
-	unsigned int top;
-	unsigned int bottom;
-	unsigned int left;
-	unsigned int right;
+enum ZoneSide {
+	TOP,
+	BOTTOM,
+	LEFT,
+	RIGHT
 };
 

@@ -24,7 +24,9 @@
     <ClCompile Include="..\Source\ZoneManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Source\const_config.h" />
     <ClInclude Include="..\Source\Dimensions.h" />
+    <ClInclude Include="..\Source\LEDCounts.h" />
     <ClInclude Include="..\Source\Zone.h" />
     <ClInclude Include="..\Source\ZoneManager.h" />
   </ItemGroup>
@@ -117,6 +119,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

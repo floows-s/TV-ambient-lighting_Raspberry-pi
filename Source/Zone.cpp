@@ -10,7 +10,8 @@
 Zone::Zone(Dimensions dimensions, cv::Scalar drawingColor)
 	: m_dimensions(dimensions), m_drawingColor(drawingColor){ }
 
-void Zone::draw(cv::Mat& frame) {
+void Zone::draw(cv::Mat& frame, bool includeAverageColor = false) {
+	// TODO: fill with includeAverageColor, but add red border
 	cv::rectangle(
 		frame,
 		this->m_origin,
