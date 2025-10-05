@@ -10,8 +10,35 @@
 
 ZoneManager::ZoneManager(Dimensions frameDimensions, LEDCounts LEDCounts)
 	: m_frameDimensions(frameDimensions), m_LEDCounts(LEDCounts) {
-	// TODO: init m_zones
 
+	for (auto& [side, zones] : this->m_zones) {
+		int LEDCount;
+		Dimensions dimensions;
+		// TODO put this in method
+		// TODO: could be swith
+		if (side == ZoneSide::TOP) { 
+			LEDCount = this->m_LEDCounts.top;
+			dimensions = this->calculateVerticalZoneDimensions(LEDCount);
+		}
+
+		if (side == ZoneSide::BOTTOM) { 
+			LEDCount = this->m_LEDCounts.bottom; 
+		}
+
+		if (side == ZoneSide::LEFT) { 
+			LEDCount = this->m_LEDCounts.left; 
+		}
+
+		if (side == ZoneSide::RIGHT) { 
+			LEDCount = this->m_LEDCounts.right; 
+		}
+
+		for (int i = 0; i < LEDCount; i++) {
+			zones.push_back(
+				new Zone()
+			);
+		}
+	}
 }
 
 void ZoneManager::draw(cv::Mat& frame, bool includeAverageColor = false) {
