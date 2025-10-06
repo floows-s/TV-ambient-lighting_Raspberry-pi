@@ -1,4 +1,7 @@
 #pragma once
+
+#include <opencv2/core.hpp>
+
 struct Dimensions {
 	unsigned int width;
 	unsigned int height;

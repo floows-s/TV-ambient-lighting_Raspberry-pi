@@ -6,11 +6,19 @@
 
 #include <opencv2/core.hpp>
 
+enum ZoneSide {
+	TOP,
+	BOTTOM,
+	LEFT,
+	RIGHT
+};
+
 
 class ZoneManager
 {
 public:
 	// Constructor
+	ZoneManager();
 	ZoneManager(Dimensions frameDimensions, LEDCounts LEDCounts);
 
 	// Methods
@@ -25,6 +33,7 @@ public:
 	unsigned int getFrameHeight() { return m_frameDimensions.height; }
 
 private:
+	std::map<ZoneSide, std::vector<Zone>> generateZones();
 	void updateZoneDimension();
 	Dimensions calculateVerticalZoneDimensions (int LEDCount);
 	Dimensions calculateHorizontalZoneDimensions (int LEDCount);
@@ -32,18 +41,5 @@ private:
 	Dimensions m_frameDimensions;
 	LEDCounts m_LEDCounts;
 
-	std::map<ZoneSide, std::vector<Zone>> m_zones = { // Init with empty values
-		{ ZoneSide::TOP, {}},
-		{ ZoneSide::BOTTOM, {}},
-		{ ZoneSide::LEFT, {}},
-		{ ZoneSide::RIGHT, {}}
-	};
+	std::map<ZoneSide, std::vector<Zone>> m_zones;
 };
-
-enum ZoneSide {
-	TOP,
-	BOTTOM,
-	LEFT,
-	RIGHT
-};
-

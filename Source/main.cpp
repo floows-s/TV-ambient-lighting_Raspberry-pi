@@ -7,27 +7,43 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/videoio.hpp>
 
+#include "ZoneManager.h"
+#include "LEDCounts.h"
 
-std::string windowName = "TV ambient lighting (Raspberry pi)";
+LEDCounts dummyLedCounts = { .top = 5, .bottom = 5, .left = 5, .right = 5 };
 
 bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame);
 
 int main() {
+	ZoneManager zoneManager;
 	cv::VideoCapture vCap(0, cv::CAP_ANY);
 	cv::Mat frame;
 
+	// Init test window
+	std::string windowName = "TV ambient lighting (Raspberry pi)";
 	cv::namedWindow(windowName);
+
+	// Start-up loop
+	std::cout << "Entering start-up loop. Waiting for capture card signal..." << std::endl;
+	while (!handleCaptureCard(vCap, frame)) {
+		std::this_thread::sleep_for(std::chrono::milliseconds(50)); // <- do not overload the thread and CPU unnecessarily
+	}
+	std::cout << "Capture card signal recieved!" << std::endl;
+
+	zoneManager = ZoneManager(Dimensions(frame.cols, frame.rows), dummyLedCounts);
 
 	// Main loop
 	bool running = true;
+	std::cout << "Entering main loop..." << std::endl;
 	while (running) {
 		// Get frame from capture card
 		if (!handleCaptureCard(vCap, frame)) {
 			std::cout << "Can't get frame from capture card, retrying..." << std::endl;
+			std::this_thread::sleep_for(std::chrono::milliseconds(50)); // <- do not overload the thread and CPU unnecessarily
 			continue;
 		}
 
-
+		zoneManager.draw(frame);
 
 		// Give frame to zones
 		// Run calculations on zones
