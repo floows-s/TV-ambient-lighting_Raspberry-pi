@@ -7,8 +7,8 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 
-Zone::Zone(Dimensions dimensions, cv::Scalar drawingColor)
-	: m_dimensions(dimensions), m_drawingColor(drawingColor){ }
+Zone::Zone(Dimensions dimensions, cv::Point origin, cv::Scalar drawingColor)
+	: m_dimensions(dimensions), m_drawingColor(drawingColor), m_origin(origin){ }
 
 void Zone::draw(cv::Mat& frame, bool includeAverageColor) {
 	// TODO: fill with includeAverageColor, but add red border

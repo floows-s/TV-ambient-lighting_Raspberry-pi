@@ -8,7 +8,7 @@ class Zone
 public:
 	// Constructor
 	Zone() = default;
-	Zone(Dimensions dimensions, cv::Scalar drawingColor = cv::Scalar(0, 0, 255));
+	Zone(Dimensions dimensions, cv::Point origin, cv::Scalar drawingColor = cv::Scalar(0, 0, 255));
 
 	// Methods
 	cv::Scalar calculate(cv::Mat& frame);

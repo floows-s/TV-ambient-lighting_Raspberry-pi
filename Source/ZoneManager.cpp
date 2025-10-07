@@ -12,7 +12,7 @@
 ZoneManager::ZoneManager() = default;
 ZoneManager::ZoneManager(Dimensions frameDimensions, LEDCounts LEDCounts)
 	: m_frameDimensions(frameDimensions), m_LEDCounts(LEDCounts), m_zones(this->generateZones()){
-	
+	// TODO: put the m_zones = this->generateZones();
 
 }
 
@@ -49,15 +49,16 @@ std::map<ZoneSide, std::vector<Zone>> ZoneManager::generateZones() {
 			LEDCount = this->m_LEDCounts.right;
 			dimensions = this->calculateVerticalZoneDimensions(LEDCount);
 			break;
+		default:
+			std::cout << "Error: a unknown ZoneSide is given while calculating the zone dimensions." << std::endl;
+			continue;
 		}
 
 		// Create zones
 		std::vector<Zone> zones;
 		for (int i = 0; i < LEDCount; i++) {
-			Zone zone(dimensions);
-			zones.push_back(
-				zone
-			);
+			Zone zone(dimensions, cv::Point( i * dimensions.width ));// TODO: fix this
+			zones.push_back(zone);
 		}
 
 		zoneMap.insert({ side, zones });
@@ -76,7 +77,7 @@ void ZoneManager::draw(cv::Mat& frame, bool includeAverageColor) {
 
 	for (auto & [side, zones] : this->m_zones) {
 		for (Zone zone : zones) {
-			this->draw(frame);
+			zone.draw(frame);
 		}
 	}
 }
@@ -141,8 +142,8 @@ Dimensions ZoneManager::calculateVerticalZoneDimensions(int LEDCount) {
 	unsigned int frameHeight = m_frameDimensions.height;
 
 	Dimensions zoneDimensions = {
-		.width = (unsigned int) std::floor(frameWidth * ZONE_THICKNES_TO_SCREEN_RATIO),
-		.height = (unsigned int) std::floor(frameHeight / LEDCount)
+		.width = (unsigned int) std::ceil(frameWidth * ZONE_THICKNES_TO_SCREEN_RATIO),
+		.height = (unsigned int) std::ceil(frameHeight / LEDCount)
 	};
 
 	return zoneDimensions;
@@ -153,8 +154,8 @@ Dimensions ZoneManager::calculateHorizontalZoneDimensions(int LEDCount) {
 	unsigned int frameHeight = m_frameDimensions.height;
 
 	Dimensions zoneDimensions = {
-		.width = (unsigned int) std::floor(frameHeight / LEDCount),
-		.height = (unsigned int) std::floor(frameWidth * ZONE_THICKNES_TO_SCREEN_RATIO)
+		.width = (unsigned int) std::ceil(frameHeight / LEDCount),
+		.height = (unsigned int) std::ceil(frameWidth * ZONE_THICKNES_TO_SCREEN_RATIO)
 	};
 
 	return zoneDimensions;
