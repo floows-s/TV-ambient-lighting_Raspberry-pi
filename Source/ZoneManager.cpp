@@ -106,7 +106,7 @@ void ZoneManager::draw(cv::Mat& frame, bool includeAverageColor) {
 		this->updateZoneDimension();
 	}
 
-	for (auto & [side, zones] : this->m_zones) {
+	for (auto& [side, zones] : this->m_zones) {
 		for (Zone zone : zones) {
 			zone.draw(frame);
 		}
@@ -114,20 +114,23 @@ void ZoneManager::draw(cv::Mat& frame, bool includeAverageColor) {
 }
 
 void ZoneManager::calculate(cv::Mat& frame) {
-	std::cout << "ZoneManager::calculate: In progress!" << std::endl;
+	if (!m_frameDimensions.equals(frame)) {
+		m_frameDimensions.width = frame.cols;
+		m_frameDimensions.height = frame.rows;
 
-	//if (!m_frameDimensions.equals(frame)) {
-	//	m_frameDimensions.width = frame.cols;
-	//	m_frameDimensions.height = frame.rows;
+		this->updateZoneDimension();
+	}
 
-	//	this->updateZoneDimension();
-	//}
-
-	//for (auto& [side, zones] : this->m_zones) {
-	//	for (Zone zone : zones) {
-	//		this->calculate(frame);
-	//	}
-	//}
+	for (auto& [side, zones] : this->m_zones) {
+		for (Zone zone : zones) {
+			try {
+				zone.calculate(frame);
+			}
+			catch (cv::Exception e) {
+				std::cout << "OPENCV ERROR: " << e.what() << std::endl;
+			}
+		}
+	}
 }
 
 void ZoneManager::updateZoneDimension() {

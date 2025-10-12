@@ -8,11 +8,11 @@ class Zone
 public:
 	// Constructor
 	Zone() = default;
-	Zone(Dimensions dimensions, cv::Point origin, cv::Scalar drawingColor = cv::Scalar(0, 0, 255));
+	Zone(Dimensions dimensions, cv::Point origin, cv::Scalar borderColor = cv::Scalar(0, 0, 255));
 
 	// Methods
 	cv::Scalar calculate(cv::Mat& frame);
-	void draw(cv::Mat& frame, bool includeAverageColor = false);
+	void draw(cv::Mat& frame, bool includeAverageColor = true);
 
 	// Getters & setters
 	unsigned int getWidth() { return m_dimensions.width; }
@@ -31,6 +31,6 @@ private:
 	Dimensions m_dimensions;
 	
 	cv::Scalar m_lastCalculatedAverageColor;
-	cv::Scalar m_drawingColor;
+	cv::Scalar m_borderColor;
 	cv::Point m_origin; 
 };

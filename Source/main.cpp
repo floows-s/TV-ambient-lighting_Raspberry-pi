@@ -45,8 +45,10 @@ int main() {
 			continue;
 		}
 
+		zoneManager.calculate(frame);
+
 		// Draw for debugging
-		zoneManager.draw(frame);
+		zoneManager.draw(frame, true);
 
 		// Give frame to zones
 		// Run calculations on zones
