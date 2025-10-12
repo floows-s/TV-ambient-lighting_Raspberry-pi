@@ -6,6 +6,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/videoio.hpp>
+#include <opencv2/imgproc.hpp>
 
 #include "ZoneManager.h"
 #include "LEDCounts.h"
@@ -30,6 +31,7 @@ int main() {
 	}
 	std::cout << "Capture card signal recieved!" << std::endl;
 
+	//  Create zones for calculating the average color
 	zoneManager = ZoneManager(Dimensions(frame.cols, frame.rows), dummyLedCounts);
 
 	// Main loop
@@ -43,6 +45,7 @@ int main() {
 			continue;
 		}
 
+		// Draw for debugging
 		zoneManager.draw(frame);
 
 		// Give frame to zones
@@ -55,7 +58,6 @@ int main() {
 		std::cout << "FPS: " << vCap.get(cv::CAP_PROP_FPS) << std::endl;
 	}
 
-
 	vCap.release();
 	return 0;
 }
@@ -64,7 +66,7 @@ int main() {
 /// <summary>
 /// Read a frame from the given vCap and write it to the given frame.
 /// </summary>
-/// <returns>If it succeeded</returns>
+/// <returns>If it could succesfully get a non-empty frame from the vCap</returns>
 bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame) {
 	// Check vCap
 	// Note: vCap.isOpened() doenst check if the capture card is still connected...

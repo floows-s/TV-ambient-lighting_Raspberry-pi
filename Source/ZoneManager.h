@@ -26,7 +26,7 @@ public:
 	void draw(cv::Mat& frame, bool includeAverageColor = false);
 
 	// Getters & setters
-	std::map<ZoneSide, std::vector<Zone>> getZones(ZoneSide side) { return m_zones; }
+	std::map<ZoneSide, std::vector<Zone>> getZones() { return m_zones; }
 	std::vector<Zone> getZonesBySide(ZoneSide side) { return m_zones[side]; }
 
 	unsigned int getFrameWidth() { return m_frameDimensions.width; }
