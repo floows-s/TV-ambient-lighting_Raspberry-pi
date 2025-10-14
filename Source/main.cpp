@@ -10,13 +10,13 @@
 
 #include "ZoneManager.h"
 #include "LEDCounts.h"
+// TODO: review this code
 
-LEDCounts dummyLedCounts = { .top = 5, .bottom = 5, .left = 5, .right = 5 };
+LEDCounts dummyLedCounts = { .top = 10, .bottom = 10, .left = 10, .right = 10 };
 
 bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame);
 
 int main() {
-	ZoneManager zoneManager;
 	cv::VideoCapture vCap(0, cv::CAP_ANY);
 	cv::Mat frame;
 
@@ -32,7 +32,7 @@ int main() {
 	std::cout << "Capture card signal recieved!" << std::endl;
 
 	//  Create zones for calculating the average color
-	zoneManager = ZoneManager(Dimensions(frame.cols, frame.rows), dummyLedCounts);
+	ZoneManager zoneManager(Dimensions(frame.cols, frame.rows), dummyLedCounts);
 
 	// Main loop
 	bool running = true;
@@ -45,7 +45,7 @@ int main() {
 			continue;
 		}
 
-		zoneManager.calculate(frame);
+		zoneManager.calculateAverages(frame);
 
 		// Draw for debugging
 		zoneManager.draw(frame, true);
@@ -57,7 +57,7 @@ int main() {
 		
 		cv::imshow(windowName, frame);
 		cv::waitKey(1); // <- Is needed to handle OpenCV GUI events (I know its stupid, waitKey??)
-		std::cout << "FPS: " << vCap.get(cv::CAP_PROP_FPS) << std::endl;
+		//std::cout << "FPS: " << vCap.get(cv::CAP_PROP_FPS) << std::endl;
 	}
 
 	vCap.release();

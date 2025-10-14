@@ -9,18 +9,15 @@
 
 #include <opencv2/core.hpp>
 
-ZoneManager::ZoneManager() = default;
 ZoneManager::ZoneManager(Dimensions frameDimensions, LEDCounts LEDCounts)
-	: m_frameDimensions(frameDimensions), m_LEDCounts(LEDCounts), m_zones(this->generateZones()){
-	// TODO: put the m_zones = this->generateZones();
-
-}
+	: m_frameDimensions(frameDimensions), m_LEDCounts(LEDCounts), m_zones(this->generateZones()){ }
 
 /// <summary>
 /// Generate zones based on the m_LEDCounts and puts it in a map with the associated ZoneSide.
 /// </summary>
 /// <returns>A map of ZoneSides with the associated generated zones.</returns>
 std::map<ZoneSide, std::vector<Zone>> ZoneManager::generateZones() {
+	std::cout << "Regenerating zones!" << std::endl;
 	std::map<ZoneSide, std::vector<Zone>> zoneMap;
 
 	ZoneSide sidesToInclude[] = { 
@@ -29,36 +26,41 @@ std::map<ZoneSide, std::vector<Zone>> ZoneManager::generateZones() {
 	};
 
 	for (ZoneSide side : sidesToInclude) {
-		cv::Scalar redColor(0, 0, 255);
-		cv::Scalar blueColor(255, 0, 0);
-		cv::Scalar greenColor(0, 255, 0);
-		cv::Scalar yellowColor(0, 255, 255);
+		cv::Vec3b redColor(0, 0, 255);
+		cv::Vec3b blueColor(255, 0, 0);
+		cv::Vec3b greenColor(0, 255, 0);
+		cv::Vec3b yellowColor(0, 255, 255);
 
-		// Set LEDCount and calculate dimension based on ZoneSide
+		// Set LEDCount and borderColor and calculate dimension based on ZoneSide
 		int LEDCount;
 		Dimensions dimensions;
-		cv::Scalar drawingColor;
+		cv::Vec3b borderColor;
+
 		switch (side) {
 		case ZoneSide::TOP:
-			drawingColor = redColor;
+			borderColor = redColor;
 			LEDCount = this->m_LEDCounts.top;
 			dimensions = this->calculateHorizontalZoneDimensions(LEDCount);
 			break;
+			
 		case ZoneSide::BOTTOM:
-			drawingColor = blueColor;
+			borderColor = blueColor;
 			LEDCount = this->m_LEDCounts.bottom;
 			dimensions = this->calculateHorizontalZoneDimensions(LEDCount);
 			break;
+
 		case ZoneSide::LEFT:
-			drawingColor = greenColor;
+			borderColor = greenColor;
 			LEDCount = this->m_LEDCounts.left;
 			dimensions = this->calculateVerticalZoneDimensions(LEDCount);
 			break;
+
 		case ZoneSide::RIGHT:
-			drawingColor = yellowColor;
+			borderColor = yellowColor;
 			LEDCount = this->m_LEDCounts.right;
 			dimensions = this->calculateVerticalZoneDimensions(LEDCount);
 			break;
+
 		default:
 			std::cout << "Error: a unknown ZoneSide is given while calculating the zone dimensions." << std::endl;
 			continue;
@@ -74,30 +76,41 @@ std::map<ZoneSide, std::vector<Zone>> ZoneManager::generateZones() {
 			case ZoneSide::TOP:
 				originPoint = cv::Point(dimensions.width * i, 0);
 				break;
+
 			case ZoneSide::BOTTOM:
 				originPoint = cv::Point(dimensions.width * i, m_frameDimensions.height - dimensions.height);
 				break;
+
 			case ZoneSide::LEFT:
 				originPoint = cv::Point(m_frameDimensions.width - dimensions.width, dimensions.height * i);
 				break;
+
 			case ZoneSide::RIGHT:
 				originPoint = cv::Point(0, dimensions.height * i);
 				break;
+				
 			default:
 				std::cout << "Error: a unknown ZoneSide is given while calculating the zone origin point." << std::endl;
 				continue;
 			}
 
-			Zone zone(dimensions, originPoint, drawingColor);
+			// Create zone and add to array
+			Zone zone(dimensions, originPoint, borderColor);
 			zones.push_back(zone);
 		}
 
+		// Add generated zones of a side to the zoneMap
 		zoneMap.insert({ side, zones });
 	}
 
 	return zoneMap;
 }
 
+/// <summary>
+/// Runs the draw method on all zones.
+/// </summary>
+/// <param name="frame">Frame drawn on</param>
+/// <param name="includeAverageColor">If set to true it will fill the rectangle with the last calculated average color of the zone</param>
 void ZoneManager::draw(cv::Mat& frame, bool includeAverageColor) {
 	if (!m_frameDimensions.equals(frame)) {
 		m_frameDimensions.width = frame.cols;
@@ -107,13 +120,17 @@ void ZoneManager::draw(cv::Mat& frame, bool includeAverageColor) {
 	}
 
 	for (auto& [side, zones] : this->m_zones) {
-		for (Zone zone : zones) {
+		for (Zone& zone : zones) {
 			zone.draw(frame);
 		}
 	}
 }
 
-void ZoneManager::calculate(cv::Mat& frame) {
+/// <summary>
+/// Runs the calculateAverage method on all zones.
+/// </summary>
+/// <param name="frame">Frame to calculate averages on</param>
+void ZoneManager::calculateAverages(cv::Mat& frame) {
 	if (!m_frameDimensions.equals(frame)) {
 		m_frameDimensions.width = frame.cols;
 		m_frameDimensions.height = frame.rows;
@@ -122,13 +139,8 @@ void ZoneManager::calculate(cv::Mat& frame) {
 	}
 
 	for (auto& [side, zones] : this->m_zones) {
-		for (Zone zone : zones) {
-			try {
-				zone.calculate(frame);
-			}
-			catch (cv::Exception e) {
-				std::cout << "OPENCV ERROR: " << e.what() << std::endl;
-			}
+		for (Zone& zone : zones) {
+			zone.calculateAverage(frame);
 		}
 	}
 }
@@ -145,21 +157,25 @@ void ZoneManager::updateZoneDimension() {
 				this->m_LEDCounts.top
 			);
 			break;
+
 		case ZoneSide::BOTTOM:
 			dimensions = this->calculateHorizontalZoneDimensions(
 				this->m_LEDCounts.bottom
 			);
 			break;
+
 		case ZoneSide::LEFT:
 			dimensions = this->calculateVerticalZoneDimensions(
 				this->m_LEDCounts.left
 			);
 			break;
+
 		case ZoneSide::RIGHT:
 			dimensions = this->calculateVerticalZoneDimensions(
 				this->m_LEDCounts.right
 			);
 			break;
+
 		default:
 			dimensions = Dimensions{ .width = -1, .height = -1 };
 		}
@@ -169,13 +185,13 @@ void ZoneManager::updateZoneDimension() {
 		assert(dimensions.width > 0 || dimensions.height > 0);
 		
 		// Update the zone dimensions
-		for (Zone zone : zones) {
+		for (Zone& zone : zones) {
 			zone.setDimensions(dimensions);
 		}
 	}
 }
 
-
+// TODO: add summary
 Dimensions ZoneManager::calculateVerticalZoneDimensions(int LEDCount) {
 	int frameWidth = m_frameDimensions.width;
 	int frameHeight = m_frameDimensions.height;
@@ -188,6 +204,7 @@ Dimensions ZoneManager::calculateVerticalZoneDimensions(int LEDCount) {
 	return zoneDimensions;
 }
 
+// TODO: add summary
 Dimensions ZoneManager::calculateHorizontalZoneDimensions(int LEDCount) {
 	int frameWidth = m_frameDimensions.width;
 	int frameHeight = m_frameDimensions.height;

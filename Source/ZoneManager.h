@@ -13,16 +13,19 @@ enum ZoneSide {
 	RIGHT
 };
 
-
+/// <summary>
+/// This class generates and manages a set of zones.
+/// The zones are generated based on the given frameDimensions and LEDCounts.
+/// When the sizes of a given frame changes the zones will also change size.
+/// </summary>
 class ZoneManager
 {
 public:
 	// Constructor
-	ZoneManager();
 	ZoneManager(Dimensions frameDimensions, LEDCounts LEDCounts);
 
 	// Methods
-	void calculate(cv::Mat& frame);
+	void calculateAverages(cv::Mat& frame);
 	void draw(cv::Mat& frame, bool includeAverageColor = false);
 
 	// Getters & setters
@@ -33,11 +36,13 @@ public:
 	unsigned int getFrameHeight() { return m_frameDimensions.height; }
 
 private:
+	// Methods
 	std::map<ZoneSide, std::vector<Zone>> generateZones();
 	void updateZoneDimension();
 	Dimensions calculateVerticalZoneDimensions (int LEDCount);
 	Dimensions calculateHorizontalZoneDimensions (int LEDCount);
 
+	// Members
 	Dimensions m_frameDimensions;
 	LEDCounts m_LEDCounts;
 
