@@ -8,12 +8,12 @@
 struct Dimensions {
 	int width;
 	int height;
-	
-	bool equals(Dimensions value) {
-		return this->width == value.width && this->height == value.height;
+
+	bool operator==(const Dimensions& value) {
+		return width == value.width && height == value.height;
 	}
 
 	bool equals(cv::Mat value) {
-		return this->width == value.cols && this->height == value.rows;
+		return width == value.cols && height == value.rows;
 	}
 };
