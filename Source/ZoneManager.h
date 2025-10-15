@@ -26,7 +26,7 @@ public:
 
 	// Methods
 	void calculateAverages(cv::Mat& frame);
-	void draw(cv::Mat& frame, bool includeAverageColor = false);
+	void draw(cv::Mat& frame, bool includeAverageColor = true);
 
 	// Getters & setters
 	std::map<ZoneSide, std::vector<Zone>> getZones() { return m_zones; }
@@ -39,8 +39,8 @@ private:
 	// Methods
 	std::map<ZoneSide, std::vector<Zone>> generateZones();
 	void updateZoneDimension();
-	Dimensions calculateVerticalZoneDimensions (int LEDCount);
-	Dimensions calculateHorizontalZoneDimensions (int LEDCount);
+	Dimensions calculateVerticalZoneDimensions(int LEDCount) const;
+	Dimensions calculateHorizontalZoneDimensions (int LEDCount) const;
 
 	// Members
 	Dimensions m_frameDimensions;

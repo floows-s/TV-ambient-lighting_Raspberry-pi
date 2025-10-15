@@ -10,10 +10,8 @@
 
 #include "ZoneManager.h"
 #include "LEDCounts.h"
-// TODO: review this code
 
-LEDCounts dummyLedCounts = { .top = 10, .bottom = 10, .left = 10, .right = 10 };
-
+LEDCounts dummyLedCounts = { .top = 10, .bottom = 5, .left = 10, .right = 10 };
 bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame);
 
 int main() {
@@ -31,7 +29,7 @@ int main() {
 	}
 	std::cout << "Capture card signal recieved!" << std::endl;
 
-	//  Create zones for calculating the average color
+	// Init manager and create zones for calculating the average color
 	ZoneManager zoneManager(Dimensions(frame.cols, frame.rows), dummyLedCounts);
 
 	// Main loop
@@ -45,21 +43,22 @@ int main() {
 			continue;
 		}
 
+		std::cout << "FPS: " << vCap.get(cv::CAP_PROP_FPS) << std::endl;
+
+
+		// Calculate averages in zones
 		zoneManager.calculateAverages(frame);
 
 		// Draw for debugging
 		zoneManager.draw(frame, true);
 
-		// Give frame to zones
-		// Run calculations on zones
-		// maybe have a zone manager do this...
-		// display zone in window??
-		
 		cv::imshow(windowName, frame);
-		cv::waitKey(1); // <- Is needed to handle OpenCV GUI events (I know its stupid, waitKey??)
-		//std::cout << "FPS: " << vCap.get(cv::CAP_PROP_FPS) << std::endl;
+		char pressedKey = cv::waitKey(1); // <- Is needed to handle OpenCV GUI events (I know its stupid, waitKey??)
+		if (pressedKey == 'q' || pressedKey == 'Q') running = false;
 	}
 
+	std::cout << "Out of main loop" << std::endl;
+	std::cout << "Releasing VideoCapture..." << std::endl;
 	vCap.release();
 	return 0;
 }

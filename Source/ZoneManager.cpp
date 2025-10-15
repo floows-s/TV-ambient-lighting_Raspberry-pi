@@ -17,7 +17,7 @@ ZoneManager::ZoneManager(Dimensions frameDimensions, LEDCounts LEDCounts)
 /// </summary>
 /// <returns>A map of ZoneSides with the associated generated zones.</returns>
 std::map<ZoneSide, std::vector<Zone>> ZoneManager::generateZones() {
-	std::cout << "Regenerating zones!" << std::endl;
+	std::cout << "Generating zones..." << std::endl;
 	std::map<ZoneSide, std::vector<Zone>> zoneMap;
 
 	ZoneSide sidesToInclude[] = { 
@@ -82,11 +82,11 @@ std::map<ZoneSide, std::vector<Zone>> ZoneManager::generateZones() {
 				break;
 
 			case ZoneSide::LEFT:
-				originPoint = cv::Point(m_frameDimensions.width - dimensions.width, dimensions.height * i);
+				originPoint = cv::Point(0, dimensions.height * i);
 				break;
 
 			case ZoneSide::RIGHT:
-				originPoint = cv::Point(0, dimensions.height * i);
+				originPoint = cv::Point(m_frameDimensions.width - dimensions.width, dimensions.height * i);
 				break;
 				
 			default:
@@ -121,7 +121,7 @@ void ZoneManager::draw(cv::Mat& frame, bool includeAverageColor) {
 
 	for (auto& [side, zones] : this->m_zones) {
 		for (Zone& zone : zones) {
-			zone.draw(frame);
+			zone.draw(frame, includeAverageColor);
 		}
 	}
 }
@@ -146,7 +146,7 @@ void ZoneManager::calculateAverages(cv::Mat& frame) {
 }
 
 void ZoneManager::updateZoneDimension() {
-	std::cout << "Update zones!" << std::endl;
+	std::cout << "Updating zones dimensions..." << std::endl;
 
 	for (auto& [side, zones] : this->m_zones) {
 		// Calculate dimensions based on ZoneSide
@@ -177,7 +177,8 @@ void ZoneManager::updateZoneDimension() {
 			break;
 
 		default:
-			dimensions = Dimensions{ .width = -1, .height = -1 };
+			std::cout << "Error: a unknown ZoneSide is given while updating the zone dimensions." << std::endl;
+			continue;
 		}
 
 
@@ -191,27 +192,37 @@ void ZoneManager::updateZoneDimension() {
 	}
 }
 
-// TODO: add summary
-Dimensions ZoneManager::calculateVerticalZoneDimensions(int LEDCount) {
+/// <summary>
+/// Calculates the dimensions of a zone based on the frame dimensions and given LEDCount.
+/// Should be used to calculate the zone dimensions of the right and left side.
+/// </summary>
+/// <param name="LEDCount"></param>
+/// <returns></returns>
+Dimensions ZoneManager::calculateVerticalZoneDimensions(int LEDCount) const {
 	int frameWidth = m_frameDimensions.width;
 	int frameHeight = m_frameDimensions.height;
 
 	Dimensions zoneDimensions = {
-		.width = (int)std::ceil(frameWidth * ZONE_THICKNES_TO_SCREEN_RATIO),
+		.width = (int)std::ceil(frameWidth * Config::ZONE_THICKNES_TO_SCREEN_RATIO),
 		.height = (int)std::ceil(frameHeight / LEDCount)
 	};
 
 	return zoneDimensions;
 }
 
-// TODO: add summary
-Dimensions ZoneManager::calculateHorizontalZoneDimensions(int LEDCount) {
+/// <summary>
+/// Calculates the dimensions of a zone based on the frame dimensions and given LEDCount.
+/// Should be used to calculate the zone dimensions of the top and bottom side.
+/// </summary>
+/// <param name="LEDCount"></param>
+/// <returns></returns>
+Dimensions ZoneManager::calculateHorizontalZoneDimensions(int LEDCount) const {
 	int frameWidth = m_frameDimensions.width;
 	int frameHeight = m_frameDimensions.height;
 
 	Dimensions zoneDimensions = {
 		.width = (int)std::ceil(frameWidth / LEDCount),
-		.height = (int)std::ceil(frameWidth * ZONE_THICKNES_TO_SCREEN_RATIO)
+		.height = (int)std::ceil(frameWidth * Config::ZONE_THICKNES_TO_SCREEN_RATIO)
 	};
 
 	return zoneDimensions;
