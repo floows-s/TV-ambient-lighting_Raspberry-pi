@@ -16,7 +16,7 @@ ZoneManager::ZoneManager(Dimensions frameDimensions, LEDCounts LEDCounts)
 /// Generate zones based on the m_LEDCounts and puts it in a map with the associated ZoneSide.
 /// </summary>
 /// <returns>A map of ZoneSides with the associated generated zones.</returns>
-std::map<ZoneSide, std::vector<Zone>> ZoneManager::generateZones() {
+std::map<ZoneSide, std::vector<Zone>> ZoneManager::generateZones() const {
 	std::cout << "Generating zones..." << std::endl;
 	std::map<ZoneSide, std::vector<Zone>> zoneMap;
 
@@ -111,7 +111,7 @@ std::map<ZoneSide, std::vector<Zone>> ZoneManager::generateZones() {
 /// </summary>
 /// <param name="frame">Frame drawn on</param>
 /// <param name="includeAverageColor">If set to true it will fill the rectangle with the last calculated average color of the zone</param>
-void ZoneManager::draw(cv::Mat& frame, bool includeAverageColor) {
+void ZoneManager::draw(const cv::Mat& frame, bool includeAverageColor) {
 	if (!m_frameDimensions.equals(frame)) {
 		m_frameDimensions.width = frame.cols;
 		m_frameDimensions.height = frame.rows;
@@ -119,8 +119,8 @@ void ZoneManager::draw(cv::Mat& frame, bool includeAverageColor) {
 		this->updateZoneDimension();
 	}
 
-	for (auto& [side, zones] : this->m_zones) {
-		for (Zone& zone : zones) {
+	for (const auto& [side, zones] : this->m_zones) {
+		for (const Zone& zone : zones) {
 			zone.draw(frame, includeAverageColor);
 		}
 	}
@@ -130,7 +130,7 @@ void ZoneManager::draw(cv::Mat& frame, bool includeAverageColor) {
 /// Runs the calculateAverage method on all zones.
 /// </summary>
 /// <param name="frame">Frame to calculate averages on</param>
-void ZoneManager::calculateAverages(cv::Mat& frame) {
+void ZoneManager::calculateAverages(const cv::Mat& frame) {
 	if (!m_frameDimensions.equals(frame)) {
 		m_frameDimensions.width = frame.cols;
 		m_frameDimensions.height = frame.rows;

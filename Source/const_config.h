@@ -13,4 +13,10 @@ namespace Config {
 		Example: 0.10 == 10%.
 	*/
 	const float ZONE_THICKNES_TO_SCREEN_RATIO = 0.10f;
+
+	/*
+	* This is used in the constructor of the VideoCapture object.
+	* With index at 0, it will use the first video device that it can find.
+	*/
+	const int VIDEO_CAPTURE_INDEX = 0;
 }

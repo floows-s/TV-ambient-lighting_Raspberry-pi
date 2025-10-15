@@ -7,25 +7,24 @@ class Zone
 
 public:
 	// Constructor
-	Zone() = default;
 	Zone(Dimensions dimensions, cv::Point origin, cv::Vec3b borderColor = cv::Vec3b(0, 0, 255));
 
 	// Methods
-	cv::Vec3b calculateAverage(cv::Mat& frame);
-	void draw(cv::Mat& frame, bool includeAverageColor = true) const;
+	cv::Vec3b calculateAverage(const cv::Mat& frame);
+	void draw(const cv::Mat& frame, bool includeAverageColor = true) const;
 
 	// Getters & setters
-	unsigned int getWidth() { return m_dimensions.width; }
+	const int getWidth() const { return m_dimensions.width; }
 	void setWidth(unsigned int value) { m_dimensions.width = value; }
 
-	unsigned int getHeight() { return m_dimensions.height; }
+	const int getHeight() const { return m_dimensions.height; }
 	void setHeight(unsigned int value) { m_dimensions.height = value; }
 
-	Dimensions getDimensions(){ return m_dimensions; }
+	const Dimensions& getDimensions() const { return m_dimensions; }
 	void setDimensions(Dimensions value){ m_dimensions = value; }
 
-	cv::Vec3b getLastCalculatedAverageColor() { return m_lastCalculatedAverageColor; }
-	cv::Point getOrigin() { return m_origin; }
+	const cv::Vec3b& getLastCalculatedAverageColor() const { return m_lastCalculatedAverageColor; }
+	const cv::Point& getOrigin() const { return m_origin; }
 	
 private:
 	// Members

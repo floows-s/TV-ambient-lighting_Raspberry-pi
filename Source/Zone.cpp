@@ -18,7 +18,7 @@ Zone::Zone(Dimensions dimensions, cv::Point origin, cv::Vec3b borderColor)
 /// </summary>
 /// <param name="frame">Frame drawn on</param>
 /// <param name="includeAverageColor">If set to true it will fill the rectangle with the last calculated average color</param>
-void Zone::draw(cv::Mat& frame, bool includeAverageColor) const {
+void Zone::draw(const cv::Mat& frame, bool includeAverageColor) const {
 
 	cv::Point endOfRect(
 		this->m_origin.x + this->m_dimensions.width,
@@ -54,12 +54,7 @@ void Zone::draw(cv::Mat& frame, bool includeAverageColor) const {
 /// </summary>
 /// <param name="frame">Frame to calculate average on</param>
 /// <returns>Calculated average color</returns>
-cv::Vec3b Zone::calculateAverage(cv::Mat& frame) {
-	// Note: OpenCV orders color in BGR
-	int blueSum = 0;
-	int greenSum = 0;
-	int redSum = 0;
-
+cv::Vec3b Zone::calculateAverage(const cv::Mat& frame) {
 	// Set region of interest (ROI)
 	cv::Rect ROIRect(
 		m_origin.x,

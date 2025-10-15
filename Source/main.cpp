@@ -10,18 +10,22 @@
 
 #include "ZoneManager.h"
 #include "LEDCounts.h"
+#include "const_config.h"
 
-LEDCounts dummyLedCounts = { .top = 10, .bottom = 5, .left = 10, .right = 10 };
+
+// TODO: edge case, when there are less pixels then LEDS, what to do...
+const LEDCounts dummyLedCounts = { .top = 10, .bottom = 10, .left = 10, .right = 10 };
 bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame);
 
 int main() {
-	cv::VideoCapture vCap(0, cv::CAP_ANY);
+	cv::VideoCapture vCap(Config::VIDEO_CAPTURE_INDEX, cv::CAP_ANY);
 	cv::Mat frame;
 
 	// Init test window
-	std::string windowName = "TV ambient lighting (Raspberry pi)";
+	const std::string windowName = "TV ambient lighting (Raspberry pi)";
 	cv::namedWindow(windowName);
 
+	// TODO: intergrate start-up loop into main loop
 	// Start-up loop
 	std::cout << "Entering start-up loop. Waiting for capture card signal..." << std::endl;
 	while (!handleCaptureCard(vCap, frame)) {
@@ -43,8 +47,8 @@ int main() {
 			continue;
 		}
 
+		// TODO: Calc FPS meanualy
 		std::cout << "FPS: " << vCap.get(cv::CAP_PROP_FPS) << std::endl;
-
 
 		// Calculate averages in zones
 		zoneManager.calculateAverages(frame);
@@ -73,7 +77,7 @@ bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame) {
 	// Note: vCap.isOpened() doenst check if the capture card is still connected...
 	if (!vCap.isOpened()) {
 		std::cout << "VideoCapture is not opened... Trying to reopen!" << std::endl;
-		vCap.open(0, cv::CAP_ANY);
+		vCap.open(Config::VIDEO_CAPTURE_INDEX, cv::CAP_ANY);
 		return false;
 	}
 

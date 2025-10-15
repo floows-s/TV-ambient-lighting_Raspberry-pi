@@ -6,7 +6,7 @@
 
 #include <opencv2/core.hpp>
 
-enum ZoneSide {
+enum class ZoneSide {
 	TOP,
 	BOTTOM,
 	LEFT,
@@ -25,19 +25,19 @@ public:
 	ZoneManager(Dimensions frameDimensions, LEDCounts LEDCounts);
 
 	// Methods
-	void calculateAverages(cv::Mat& frame);
-	void draw(cv::Mat& frame, bool includeAverageColor = true);
+	void calculateAverages(const cv::Mat& frame);
+	void draw(const cv::Mat& frame, bool includeAverageColor = true);
 
 	// Getters & setters
-	std::map<ZoneSide, std::vector<Zone>> getZones() { return m_zones; }
-	std::vector<Zone> getZonesBySide(ZoneSide side) { return m_zones[side]; }
+	const std::map<ZoneSide, std::vector<Zone>>& getZones() { return m_zones; }
+	const std::vector<Zone>& getZonesBySide(ZoneSide side) { return m_zones[side]; }
 
-	unsigned int getFrameWidth() { return m_frameDimensions.width; }
-	unsigned int getFrameHeight() { return m_frameDimensions.height; }
+	int getFrameWidth() const { return m_frameDimensions.width; }
+	int getFrameHeight() const { return m_frameDimensions.height; }
 
 private:
 	// Methods
-	std::map<ZoneSide, std::vector<Zone>> generateZones();
+	std::map<ZoneSide, std::vector<Zone>> generateZones() const;
 	void updateZoneDimension();
 	Dimensions calculateVerticalZoneDimensions(int LEDCount) const;
 	Dimensions calculateHorizontalZoneDimensions (int LEDCount) const;
