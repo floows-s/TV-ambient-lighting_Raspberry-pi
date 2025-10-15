@@ -20,15 +20,17 @@ Zone::Zone(Dimensions dimensions, cv::Point origin, cv::Vec3b borderColor)
 /// <param name="includeAverageColor">If set to true it will fill the rectangle with the last calculated average color</param>
 void Zone::draw(cv::Mat& frame, bool includeAverageColor) const {
 
+	cv::Point endOfRect(
+		this->m_origin.x + this->m_dimensions.width,
+		this->m_origin.y + this->m_dimensions.height
+	);
+
 	// Average color
 	if (includeAverageColor) {
 		cv::rectangle(
 			frame,
 			this->m_origin,
-			cv::Point(
-				this->m_origin.x + this->m_dimensions.width,
-				this->m_origin.y + this->m_dimensions.height
-			),
+			endOfRect,
 			m_lastCalculatedAverageColor,
 			-1 // <- -1 == fill rectangle
 		);
@@ -39,10 +41,7 @@ void Zone::draw(cv::Mat& frame, bool includeAverageColor) const {
 	cv::rectangle(
 		frame,
 		this->m_origin, 
-		cv::Point(
-			this->m_origin.x + this->m_dimensions.width,
-			this->m_origin.y + this->m_dimensions.height
-		),
+		endOfRect,
 		m_borderColor,
 		borderBrushThickness
 	);
@@ -61,35 +60,24 @@ cv::Vec3b Zone::calculateAverage(cv::Mat& frame) {
 	int greenSum = 0;
 	int redSum = 0;
 
-	// Set region that needs to looped over (vars for readability)
-	int beginY = this->m_origin.y;
-	int endY = this->m_origin.y + this->m_dimensions.height;
+	// Set region of interest (ROI)
+	cv::Rect ROIRect(
+		m_origin.x,
+		m_origin.y,
+		this->m_dimensions.width, 
+		this->m_dimensions.height
+	);
 
-	int beginX = this->m_origin.x;
-	int endX = this->m_origin.x + this->m_dimensions.width;
+	// Crop frame to ROI
+	cv::Mat croppedImageROI = frame(ROIRect);
 
-	// Loop over region
-	for (int y = beginY; y < endY; y++) {
-		for (int x = beginX; x < endX; x++) {
-			cv::Vec3b color = frame.at<cv::Vec3b>(cv::Point(x,y));
+	// Calculate average
+	cv::Scalar averageColor = cv::mean(croppedImageROI); // Note: cv::mean is prob a highly optimized function so its beter to use that...
 
-			// Collect BGR colors
-			blueSum += color.val[0];
-			greenSum += color.val[1];
-			redSum += color.val[2];
-		}
-	}
-
-	int totalPixelAmount = this->m_dimensions.width * this->m_dimensions.height;
-
-	// Calculate averages
-	double blueAverage = blueSum / totalPixelAmount;
-	double greenAverage = greenSum / totalPixelAmount;
-	double redAverage = redSum / totalPixelAmount;
-
-	this->m_lastCalculatedAverageColor[0] = blueAverage;
-	this->m_lastCalculatedAverageColor[1] = greenAverage;
-	this->m_lastCalculatedAverageColor[2] = redAverage;
+	// Set last calculated average
+	this->m_lastCalculatedAverageColor[0] = averageColor[0]; // Blue
+	this->m_lastCalculatedAverageColor[1] = averageColor[1]; // Green
+	this->m_lastCalculatedAverageColor[2] = averageColor[2]; // Red
 
 	return this->m_lastCalculatedAverageColor;
 }
