@@ -12,6 +12,9 @@
 #include "LEDCounts.h"
 #include "const_config.h"
 
+double clock_tToMilliseconds(clock_t ticks) {
+	return (ticks / (double)CLOCKS_PER_SEC) * 1000.0;
+}
 
 // TODO: edge case, when there are less pixels then LEDS, what to do...
 const LEDCounts dummyLedCounts = { .top = 10, .bottom = 10, .left = 10, .right = 10 };
@@ -25,7 +28,6 @@ int main() {
 	const std::string windowName = "TV ambient lighting (Raspberry pi)";
 	cv::namedWindow(windowName);
 
-	// TODO: intergrate start-up loop into main loop
 	// Start-up loop
 	std::cout << "Entering start-up loop. Waiting for capture card signal..." << std::endl;
 	while (!handleCaptureCard(vCap, frame)) {
@@ -34,12 +36,18 @@ int main() {
 	std::cout << "Capture card signal recieved!" << std::endl;
 
 	// Init manager and create zones for calculating the average color
-	ZoneManager zoneManager(Dimensions(frame.cols, frame.rows), dummyLedCounts);
+	ZoneManager zoneManager(dummyLedCounts, Dimensions(frame.cols, frame.rows));
 
 	// Main loop
-	bool running = true;
 	std::cout << "Entering main loop..." << std::endl;
+	uint64_t loopCounter = 0; // Dont worry this will only overflow in about 51 milion years ;)
+	double averageLoopTimeMS = 0.0;
+
+	bool running = true;
 	while (running) {
+		loopCounter++;
+		auto startTime = std::chrono::high_resolution_clock::now();
+
 		// Get frame from capture card
 		if (!handleCaptureCard(vCap, frame)) {
 			std::cout << "Can't get frame from capture card, retrying..." << std::endl;
@@ -47,14 +55,17 @@ int main() {
 			continue;
 		}
 
-		// TODO: Calc FPS meanualy
-		std::cout << "FPS: " << vCap.get(cv::CAP_PROP_FPS) << std::endl;
-
 		// Calculate averages in zones
 		zoneManager.calculateAverages(frame);
 
 		// Draw for debugging
 		zoneManager.draw(frame, true);
+
+		// Calculate incremental average
+		auto endTime = std::chrono::high_resolution_clock::now();
+		float deltaTimeInMS = std::chrono::duration<float, std::milli>(endTime - startTime).count();
+		averageLoopTimeMS += (deltaTimeInMS - averageLoopTimeMS) / loopCounter;
+		std::cout << "Average loop time: " << averageLoopTimeMS << "MS" << std::endl;
 
 		cv::imshow(windowName, frame);
 		char pressedKey = cv::waitKey(1); // <- Is needed to handle OpenCV GUI events (I know its stupid, waitKey??)

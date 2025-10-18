@@ -22,7 +22,7 @@ class ZoneManager
 {
 public:
 	// Constructor
-	ZoneManager(Dimensions frameDimensions, LEDCounts LEDCounts);
+	ZoneManager(LEDCounts LEDCounts, Dimensions frameDimensions = Dimensions(0,0));
 
 	// Methods
 	void calculateAverages(const cv::Mat& frame);

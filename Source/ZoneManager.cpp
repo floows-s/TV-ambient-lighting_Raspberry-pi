@@ -9,8 +9,8 @@
 
 #include <opencv2/core.hpp>
 
-ZoneManager::ZoneManager(Dimensions frameDimensions, LEDCounts LEDCounts)
-	: m_frameDimensions(frameDimensions), m_LEDCounts(LEDCounts), m_zones(this->generateZones()){ }
+ZoneManager::ZoneManager(LEDCounts LEDCounts, Dimensions frameDimensions)
+	: m_LEDCounts(LEDCounts), m_frameDimensions(frameDimensions), m_zones(this->generateZones()){ }
 
 /// <summary>
 /// Generate zones based on the m_LEDCounts and puts it in a map with the associated ZoneSide.
