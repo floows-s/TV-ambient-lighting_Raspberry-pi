@@ -8,13 +8,11 @@
 #include <opencv2/videoio.hpp>
 #include <opencv2/imgproc.hpp>
 
+#include <ws2811.h>
+
 #include "ZoneManager.h"
 #include "LEDCounts.h"
 #include "const_config.h"
-
-double clock_tToMilliseconds(clock_t ticks) {
-	return (ticks / (double)CLOCKS_PER_SEC) * 1000.0;
-}
 
 // TODO: edge case, when there are less pixels then LEDS, what to do...
 const LEDCounts dummyLedCounts = { .top = 10, .bottom = 10, .left = 10, .right = 10 };

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 set(CMAKE_CXX_STANDARD 20)
 project(TV_ambient_lighting_rasppi)
 
-# Project files
+# -- PROJECT FILES -- 
 set(SOURCE_DIR ./Source)
 list(
     APPEND SOURCE_FILES
@@ -18,23 +18,22 @@ list(
 
 add_executable(TV_ambient_lighting_rasppi ${SOURCE_FILES})
 
-# OpenCV
-# if(WIN32)
-#     set(OpenCVIncludeDirs, "C:/opencv/build/include")
-#     set(OpenCVLibs, "C:/opencv/build/x64/vc16/lib")
-# endif(WIN32)
-
-# if(UNIX)
-#     set(OpenCVIncludeDirs, "./Librarys/opencv/build/include")
-#     set(OpenCVLibs, "./Librarys/opencv/x64/vc16/lib")
-# endif(UNIX)
-
+# -- OPENCV --
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(TV_ambient_lighting_rasppi ${OpenCV_LIBS})
 
-message(${OpenCV_LIBS})
-#Getting error when make: prob using the .lib which is MSCV and not a .dll, Maybe just make windows cmake do visual studio project...
+# -- RPI_WS281X --
+set(RPI_WS281X_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Librarys/rpi_ws281x")
+set(RPI_WS281X_LIB "${RPI_WS281X_DIR}/build/ws2811.a")
 
-#TODO: rpi_2847wx
+target_include_directories(TV_ambient_lighting_rasppi PRIVATE "${RPI_WS281X_DIR}")
 
+if(UNIX)
+    if(NOT EXISTS RPI_WS281X_LIB) 
+        message(FATAL_ERROR "Can't find Librarys/rpi_ws281x/build/ws2811.a! Have you build the library yet?")
+    endif()
+    target_link_libraries(TV_ambient_lighting_rasppi ${RPI_WS281X_LIB})
+else()
+    message("Non-unix platform detected: Not linking rpi_ws281x library! (Headers are included)")
+endif()
