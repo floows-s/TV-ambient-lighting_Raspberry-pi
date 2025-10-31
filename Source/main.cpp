@@ -14,8 +14,24 @@
 #include "LEDCounts.h"
 #include "const_config.h"
 
+ws2811_t ledStrip =
+{
+	.freq = Config::TARGET_FREQ,
+	.dmanum = Config::DMA,
+	.channel =
+	{
+		{
+			.gpionum = Config::DATA_OUT_GPIO_PIN,
+			.invert = 0,
+			.count = Config::LED_COUNT,
+			.strip_type = Config::STRIP_TYPE,
+			.brightness = 128,
+		}
+	}
+};
+
+
 // TODO: edge case, when there are less pixels then LEDS, what to do...
-const LEDCounts dummyLedCounts = { .top = 10, .bottom = 10, .left = 10, .right = 10 };
 bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame);
 
 int main() {
@@ -34,7 +50,7 @@ int main() {
 	std::cout << "Capture card signal recieved!" << std::endl;
 
 	// Init manager and create zones for calculating the average color
-	ZoneManager zoneManager(dummyLedCounts, Dimensions(frame.cols, frame.rows));
+	ZoneManager zoneManager(Config::LED_COUNTS, Dimensions(frame.cols, frame.rows));
 
 	// Main loop
 	std::cout << "Entering main loop..." << std::endl;
@@ -59,20 +75,28 @@ int main() {
 		// Draw for debugging
 		zoneManager.draw(frame, true);
 
-		// Calculate incremental average
+		// Set calculated colors
+		setColorsOnLedStrip(ledStrip, zoneManager);
+
+		// Actualy show colors on led-strip
+		ws2811_render(&ledStrip);
+
+		// Calculate incremental average loop time
 		auto endTime = std::chrono::high_resolution_clock::now();
 		float deltaTimeInMS = std::chrono::duration<float, std::milli>(endTime - startTime).count();
 		averageLoopTimeMS += (deltaTimeInMS - averageLoopTimeMS) / loopCounter;
 		std::cout << "Average loop time: " << averageLoopTimeMS << "MS" << std::endl;
 
 		cv::imshow(windowName, frame);
-		char pressedKey = cv::waitKey(1); // <- Is needed to handle OpenCV GUI events (I know its stupid, waitKey??)
+		char pressedKey = cv::waitKey(1); // <- Is needed to handle OpenCV GUI events (like imshow) (I know its stupid, waitKey??)
 		if (pressedKey == 'q' || pressedKey == 'Q') running = false;
 	}
 
 	std::cout << "Out of main loop" << std::endl;
 	std::cout << "Releasing VideoCapture..." << std::endl;
 	vCap.release();
+
+	ws2811_fini(&ledStrip);
 	return 0;
 }
 
@@ -104,4 +128,25 @@ bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame) {
 	}
 
 	return true;
+}
+
+void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
+	/*
+	* Note: 
+	* due to lack of motivation to finish this project properly
+	* because i have bigger projects i want to work, the flow direction is static...
+	* 
+	* If anyone looking at this and has nothing to do, and wants to implement this i would thank you!
+	* I would suggest doing something with the ZoneSide enum in a array as a var in the const_config file.
+	* 
+	* For now the flow is (looking infront of the screen): 
+	*   v ---------- <
+    *   |            |
+    *   |            | START (Right bottom)
+    *   > ----------
+	*			 END (Right bottom)
+	*/
+
+	// TODO: this function
+
 }

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "LEDCounts.h"
+#include "ZoneManager.h"
+
 /*
 	Purpose: 
 	This file holds const values that are used all over the program.
@@ -19,4 +22,15 @@ namespace Config {
 	* With index at 0, it will use the first video device that it can find.
 	*/
 	const int VIDEO_CAPTURE_INDEX = 0;
+
+	const LEDCounts LED_COUNTS = { .top = 10, .bottom = 10, .left = 10, .right = 10 };
+
+	/*
+	* Down below is data pased to the library controlling the led-strip.
+	*/
+	const int DATA_OUT_GPIO_PIN = 18;
+	const uint32_t TARGET_FREQ = WS2811_TARGET_FREQ;
+	const int DMA = 10;
+	const int STRIP_TYPE = WS2811_STRIP_GBR; // WS2812/SK6812RGB integrated chip+leds
+	const int LED_COUNT = LED_COUNTS.all();
 }

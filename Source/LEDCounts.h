@@ -7,5 +7,13 @@ struct LEDCounts {
 	unsigned int bottom;
 	unsigned int left;
 	unsigned int right;
+
+	/// <summary>
+	/// Adds up all the counts and returns the sum.
+	/// </summary>
+	/// <returns>The sum of all leds</returns>
+	unsigned int all() const {
+		return top + bottom + left + right;
+	}
 };
 
