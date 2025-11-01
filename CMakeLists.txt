@@ -30,7 +30,7 @@ set(RPI_WS281X_LIB "${RPI_WS281X_DIR}/build/libws2811.a")
 target_include_directories(TV_ambient_lighting_rasppi PRIVATE "${RPI_WS281X_DIR}")
 
 if(UNIX)
-    if(NOT EXISTS RPI_WS281X_LIB) 
+    if(NOT RPI_WS281X_LIB) 
         message(FATAL_ERROR "Can't find libws2811.a! Have you build the library yet? Looking for it at: ${RPI_WS281X_LIB}")
     endif()
     target_link_libraries(TV_ambient_lighting_rasppi ${RPI_WS281X_LIB})
