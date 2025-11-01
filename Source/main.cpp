@@ -33,6 +33,7 @@ ws2811_t ledStrip =
 
 // TODO: edge case, when there are less pixels then LEDS, what to do...
 bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame);
+void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
 
 int main() {
 	cv::VideoCapture vCap(Config::VIDEO_CAPTURE_INDEX, cv::CAP_ANY);
