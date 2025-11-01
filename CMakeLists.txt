@@ -25,13 +25,13 @@ target_link_libraries(TV_ambient_lighting_rasppi ${OpenCV_LIBS})
 
 # -- RPI_WS281X --
 set(RPI_WS281X_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Librarys/rpi_ws281x")
-set(RPI_WS281X_LIB "${RPI_WS281X_DIR}/build/ws2811.a")
+set(RPI_WS281X_LIB "${RPI_WS281X_DIR}/build/libws2811.a")
 
 target_include_directories(TV_ambient_lighting_rasppi PRIVATE "${RPI_WS281X_DIR}")
 
 if(UNIX)
     if(NOT EXISTS RPI_WS281X_LIB) 
-        message(FATAL_ERROR "Can't find Librarys/rpi_ws281x/build/ws2811.a! Have you build the library yet?")
+        message(FATAL_ERROR "Can't find Librarys/rpi_ws281x/build/libws2811.a! Have you build the library yet?")
     endif()
     target_link_libraries(TV_ambient_lighting_rasppi ${RPI_WS281X_LIB})
 else()
