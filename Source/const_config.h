@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ws2811.h"
+
 #include "LEDCounts.h"
 #include "ZoneManager.h"
 
