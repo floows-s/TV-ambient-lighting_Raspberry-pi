@@ -32,5 +32,4 @@ namespace Config {
 	const uint32_t TARGET_FREQ = WS2811_TARGET_FREQ;
 	const int DMA = 10;
 	const int STRIP_TYPE = WS2811_STRIP_GBR; // WS2812/SK6812RGB integrated chip+leds
-	const int LED_COUNT = LED_COUNTS.all();
 }

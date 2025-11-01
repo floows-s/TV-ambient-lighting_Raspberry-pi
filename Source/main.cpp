@@ -23,7 +23,7 @@ ws2811_t ledStrip =
 		{
 			.gpionum = Config::DATA_OUT_GPIO_PIN,
 			.invert = 0,
-			.count = Config::LED_COUNT,
+			.count = Config::LED_COUNTS.all(),
 			.strip_type = Config::STRIP_TYPE,
 			.brightness = 128,
 		}
@@ -147,6 +147,9 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 	*			 END (Right bottom)
 	*/
 
-	// TODO: this function
+	//leds[i] < 0xWWRRGGBB
+	for (int i = 0; i < Config::LED_COUNTS.all() - 1; i++) {
+		ledStrip.channel[0].leds[i] = 0x00001000;
+	}
 
 }
