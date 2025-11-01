@@ -99,7 +99,7 @@ int main() {
 	std::cout << "Releasing VideoCapture..." << std::endl;
 	vCap.release();
 
-	std::cout << "Releasing ledStrip..." << std::endl;
+	std::cout << "Releasing led-strip..." << std::endl;
 	ws2811_fini(&ledStrip);
 
 	return 0;
