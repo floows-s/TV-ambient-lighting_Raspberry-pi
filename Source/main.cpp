@@ -36,6 +36,8 @@ bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame);
 void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
 
 int main() {
+	ws2811_init(&ledStrip);
+
 	cv::VideoCapture vCap(Config::VIDEO_CAPTURE_INDEX, cv::CAP_ANY);
 	cv::Mat frame;
 
@@ -97,7 +99,9 @@ int main() {
 	std::cout << "Releasing VideoCapture..." << std::endl;
 	vCap.release();
 
+	std::cout << "Releasing ledStrip..." << std::endl;
 	ws2811_fini(&ledStrip);
+
 	return 0;
 }
 
