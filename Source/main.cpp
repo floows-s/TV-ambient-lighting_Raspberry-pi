@@ -78,11 +78,8 @@ int main() {
 		// Draw for debugging
 		zoneManager.draw(frame, true);
 
-		// Set calculated colors
-		setColorsOnLedStrip(ledStrip, zoneManager);
-
-		// Actualy show colors on led-strip
-		ws2811_render(&ledStrip);
+		// Set calculated colors and render led-strip
+		handleRenderLedStrip(ledStrip, zoneManager);
 
 		// Calculate incremental average loop time
 		auto endTime = std::chrono::high_resolution_clock::now();
@@ -135,7 +132,28 @@ bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame) {
 	return true;
 }
 
-void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
+/// <summary>
+/// Sets the colors on the LED strip based on the ZoneManager's zones last calculated average's and then renders the changes to the physical strip.
+/// </summary>
+/// <param name="ledStrip">A reference to the ws2811_t ledStrip to be updated and rendered.</param>
+/// <param name="zoneManager">A reference to the ZoneManager.</param>
+static bool handleRenderLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
+	setColorsOnLedStrip(ledStrip, zoneManager);
+	ws2811_return_t result = ws2811_render(&ledStrip);
+	if (result != ws2811_return_t::WS2811_SUCCESS) {
+		std::cout << "Cant render led-strip! Eror code: " << result << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
+/// <summary>
+/// Sets the colors in the ledStrip.
+/// </summary>
+/// <param name="ledStrip">A reference to the ws2811_t ledStrip.</param>
+/// <param name="zoneManager">A refrence of the zoneManager's.</param>
+static void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 	/*
 	* Note: 
 	* due to lack of motivation to finish this project properly
@@ -152,9 +170,30 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 	*			 END (Right bottom)
 	*/
 
-	//leds[i] < 0xWWRRGGBB
-	for (int i = 0; i < Config::LED_COUNTS.all() - 1; i++) {
-		ledStrip.channel[0].leds[i] = 0x00001000;
-	}
+	ZoneSide zoneOrder[] = { ZoneSide::LEFT, ZoneSide::TOP, ZoneSide::RIGHT, ZoneSide::BOTTOM };
 
+	int startPosition = 0;
+	for (ZoneSide zoneSide : zoneOrder) {
+
+		const std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
+
+		for (int i = 0; i < zones.size(); i++) {
+			//leds[i] < 0xWWRRGGBB
+			ledStrip.channel[0].leds[startPosition + i] = BGRToWRGBHex(
+				zones[i].getLastCalculatedAverageColor()
+			);
+		}
+
+		startPosition = (zones.size() - 1);
+	}
+}
+/// <summary>
+/// Converts a BGR value to a RGB hex value.
+/// Note: White is also included but set to 0.
+/// </summary>
+/// <param name="color">The color to be converted.</param>
+/// <returns>The WRGB hex value.</returns>
+static int BGRToWRGBHex(cv::Vec3b color) {
+	//		  White			Red 				Green		  Blue
+	return ((0 << 24) | (color[2] << 16) | (color[1] << 8) | color[0]);
 }
