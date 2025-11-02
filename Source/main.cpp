@@ -31,9 +31,10 @@ ws2811_t ledStrip =
 };
 
 
-// TODO: edge case, when there are less pixels then LEDS, what to do...
 bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame);
+bool handleRenderLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
 void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
+int BGRToWRGBHex(cv::Vec3b color);
 
 int main() {
 	ws2811_init(&ledStrip);
@@ -137,11 +138,11 @@ bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame) {
 /// </summary>
 /// <param name="ledStrip">A reference to the ws2811_t ledStrip to be updated and rendered.</param>
 /// <param name="zoneManager">A reference to the ZoneManager.</param>
-static bool handleRenderLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
+bool handleRenderLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 	setColorsOnLedStrip(ledStrip, zoneManager);
 	ws2811_return_t result = ws2811_render(&ledStrip);
 	if (result != ws2811_return_t::WS2811_SUCCESS) {
-		std::cout << "Cant render led-strip! Eror code: " << result << std::endl;
+		std::cout << "Can't render led-strip! Eror code: " << result << std::endl;
 		return false;
 	}
 
@@ -153,7 +154,7 @@ static bool handleRenderLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 /// </summary>
 /// <param name="ledStrip">A reference to the ws2811_t ledStrip.</param>
 /// <param name="zoneManager">A refrence of the zoneManager's.</param>
-static void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
+void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 	/*
 	* Note: 
 	* due to lack of motivation to finish this project properly
@@ -193,7 +194,7 @@ static void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 /// </summary>
 /// <param name="color">The color to be converted.</param>
 /// <returns>The WRGB hex value.</returns>
-static int BGRToWRGBHex(cv::Vec3b color) {
+int BGRToWRGBHex(cv::Vec3b color) {
 	//		  White			Red 				Green		  Blue
 	return ((0 << 24) | (color[2] << 16) | (color[1] << 8) | color[0]);
 }
