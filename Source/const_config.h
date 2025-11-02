@@ -25,7 +25,12 @@ namespace Config {
 	*/
 	const int VIDEO_CAPTURE_INDEX = 0;
 
-	const LEDCounts LED_COUNTS = { .top = 10, .bottom = 10, .left = 10, .right = 10 };
+	const LEDCounts LED_COUNTS = { 
+		.top = 14, 
+		.bottom = 15, 
+		.left = 10, 
+		.right = 9 
+	};
 
 	/*
 	* Down below is data pased to the library controlling the led-strip.
