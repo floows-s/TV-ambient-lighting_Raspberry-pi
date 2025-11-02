@@ -178,6 +178,7 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 
 		const std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
 
+		// TODO: Reverse when on left
 		for (int i = 0; i < zones.size(); i++) {
 			//leds[i] < 0xWWRRGGBB
 			ledStrip.channel[0].leds[startPosition + i] = BGRToWRGBHex(
@@ -188,6 +189,8 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 		startPosition += (zones.size() - 1);
 	}
 }
+
+// TODO UPDATE SUMARRY!
 /// <summary>
 /// Converts a BGR value to a RGB hex value.
 /// Note: White is also included but set to 0.
@@ -195,6 +198,6 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 /// <param name="color">The color to be converted.</param>
 /// <returns>The WRGB hex value.</returns>
 int BGRToWRGBHex(cv::Vec3b color) {
-	//		  White			Red 				Green		  Blue
-	return ((0 << 24) | (color[2] << 16) | (color[1] << 8) | color[0]);
+	//		  White			Blue 			   Green		   Red
+	return ((0 << 24) | (color[0] << 16) | (color[1] << 8) | color[2]);
 }
