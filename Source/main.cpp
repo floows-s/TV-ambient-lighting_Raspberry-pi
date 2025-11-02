@@ -97,6 +97,7 @@ int main() {
 	std::cout << "Releasing VideoCapture..." << std::endl;
 	vCap.release();
 
+	// TODO hook into shutdown or SIGKILL and make led strip off
 	std::cout << "Releasing led-strip..." << std::endl;
 	ws2811_fini(&ledStrip);
 
