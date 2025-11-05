@@ -95,7 +95,7 @@ int main() {
 	ZoneManager zoneManager(Config::LED_COUNTS, Dimensions(frame.cols, frame.rows));
 
 	// TODO: remove this!
-	DEBUG_setRainbowColors(zoneManager);
+	//DEBUG_setRainbowColors(zoneManager);
 
 	// Main loop
 	std::cout << "Entering main loop..." << std::endl;
