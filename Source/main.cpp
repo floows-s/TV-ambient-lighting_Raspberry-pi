@@ -228,8 +228,8 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 
 		// If the current ZoneSide is top of right -> loop through zones in reverse
 		bool reverseLoop = (zoneSide == ZoneSide::TOP);
-		int start = (reverseLoop ? zones.size() : 0);
-		int end = (reverseLoop ? -1 : zones.size());
+		int start = (reverseLoop ? zones.size() - 1 : 0);
+		int end = (reverseLoop ? -1 : zones.size());// Note: past the last-index
 		int step = (reverseLoop ? -1 : 1);
 
 		cv::Vec3b color;
