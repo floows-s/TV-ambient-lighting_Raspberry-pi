@@ -233,7 +233,7 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 			);
 		}
 
-		int ledsStartPosition = (zones.size() - 1);
+		ledsStartPosition += (zones.size() - 1);
 	}
 }
 
