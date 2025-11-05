@@ -221,7 +221,7 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 
 	ZoneSide zoneOrder[] = { ZoneSide::RIGHT, ZoneSide::TOP, ZoneSide::LEFT, ZoneSide::BOTTOM };
 
-	int ledsStartPosition = 0;
+	int ledIndex = 0;
 	for (ZoneSide zoneSide : zoneOrder) {
 		// TODO: change this back to const
 		std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
@@ -248,12 +248,11 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 
 		for (int i = start; i != end; i += step) {
 			//zones[i].DEBUG_SETLASTCALCULATEDAVERAGECOLOR(color);
-			ledStrip.channel[0].leds[ledsStartPosition + i] = BGRToWRGBHex(
+			ledStrip.channel[0].leds[ledIndex] = BGRToWRGBHex(
 				zones[i].getLastCalculatedAverageColor()
 			);
+			ledIndex++;
 		}
-
-		ledsStartPosition += zones.size();
 	}
 }
 
