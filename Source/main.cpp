@@ -26,7 +26,7 @@ ws2811_t ledStrip =
 			.invert = 0,
 			.count = Config::LED_COUNTS.all(),
 			.strip_type = Config::STRIP_TYPE,
-			.brightness = 50,
+			.brightness = 128,
 		}
 	}
 };
