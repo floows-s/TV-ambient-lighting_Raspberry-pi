@@ -58,14 +58,18 @@ std::vector<cv::Vec3b> DEBUG_generateRainbowColors(int numColors) {
 void DEBUG_setRainbowColors(ZoneManager& zoneManager) {
 	ZoneSide zoneSides[] = { ZoneSide::LEFT, ZoneSide::TOP, ZoneSide::RIGHT, ZoneSide::BOTTOM };
 
+	std::vector<cv::Vec3b> colors = DEBUG_generateRainbowColors(Config::LED_COUNTS.all());
+
+	int startPos = 0;
 	for (ZoneSide zoneSide : zoneSides) {
 		std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
 		
-		std::vector<cv::Vec3b> colors = DEBUG_generateRainbowColors(zones.size());
 
 		for (int i = 0; i < zones.size(); i++) {
-			zones[i].DEBUG_SETLASTCALCULATEDAVERAGECOLOR(colors[i]);
+			zones[i].DEBUG_SETLASTCALCULATEDAVERAGECOLOR(colors[startPos + i]);
 		}
+
+		startPos += zones.size() - 1;
 	}
 }
 

@@ -24,6 +24,7 @@ public:
 	void setDimensions(Dimensions value){ m_dimensions = value; }
 
 	const cv::Vec3b& getLastCalculatedAverageColor() const { return m_lastCalculatedAverageColor; }
+	// TODO: remove this!
 	void DEBUG_SETLASTCALCULATEDAVERAGECOLOR(cv::Vec3b value) { m_lastCalculatedAverageColor = value; }
 	const cv::Point& getOrigin() const { return m_origin; }
 	
