@@ -30,7 +30,8 @@ public:
 
 	// Getters & setters
 	const std::map<ZoneSide, std::vector<Zone>>& getZones() { return m_zones; }
-	const std::vector<Zone>& getZonesBySide(ZoneSide side) { return m_zones[side]; }
+	// TODO: change back to const
+	std::vector<Zone>& getZonesBySide(ZoneSide side) { return m_zones[side]; }
 
 	int getFrameWidth() const { return m_frameDimensions.width; }
 	int getFrameHeight() const { return m_frameDimensions.height; }

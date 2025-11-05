@@ -37,6 +37,40 @@ bool handleRenderLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
 void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
 int BGRToWRGBHex(cv::Vec3b color);
 
+// TODO: remove this!
+std::vector<cv::Vec3b> DEBUG_generateRainbowColors(int numColors) {
+	std::vector<cv::Vec3b> colors;
+	colors.reserve(numColors);
+
+	for (int i = 0; i < numColors; ++i) {
+		// Hue ranges from 0–240 (red -> violet) in OpenCV HSV
+		float hue = (float)i / (numColors - 1) * 240.0f;
+		cv::Mat hsv(1, 1, CV_8UC3, cv::Vec3b((uchar)hue, 255, 255));
+		cv::Mat bgr;
+		cv::cvtColor(hsv, bgr, cv::COLOR_HSV2BGR);
+		colors.push_back(bgr.at<cv::Vec3b>(0, 0));
+	}
+
+	return colors;
+}
+
+// TODO: remove this!
+void DEBUG_setRainbowColors(ZoneManager& zoneManager) {
+	ZoneSide zoneSides[] = { ZoneSide::LEFT, ZoneSide::TOP, ZoneSide::RIGHT, ZoneSide::BOTTOM };
+
+	for (ZoneSide zoneSide : zoneSides) {
+		std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
+		
+		std::vector<cv::Vec3b> colors = DEBUG_generateRainbowColors(zones.size());
+
+		for (int i = 0; i < zones.size(); i++) {
+			zones[i].DEBUG_SETLASTCALCULATEDAVERAGECOLOR(colors[i]);
+		}
+	}
+}
+
+
+
 int main() {
 	ws2811_init(&ledStrip);
 
@@ -57,6 +91,9 @@ int main() {
 	// Init manager and create zones for calculating the average color
 	ZoneManager zoneManager(Config::LED_COUNTS, Dimensions(frame.cols, frame.rows));
 
+	// TODO: remove this!
+	DEBUG_setRainbowColors(zoneManager);
+
 	// Main loop
 	std::cout << "Entering main loop..." << std::endl;
 	uint64_t loopCounter = 0; // Dont worry this will only overflow in about 51 milion years ;)
@@ -75,7 +112,7 @@ int main() {
 		}
 
 		// Calculate averages in zones
-		zoneManager.calculateAverages(frame);
+		//zoneManager.calculateAverages(frame);
 
 		// Draw for debugging
 		zoneManager.draw(frame, true);
@@ -100,6 +137,8 @@ int main() {
 
 	// TODO hook into shutdown or SIGKILL and make led strip off
 	std::cout << "Releasing led-strip..." << std::endl;
+	ledStrip.channel[0].brightness = 0; // Easy way to turn off all leds
+	ws2811_render(&ledStrip);
 	ws2811_fini(&ledStrip);
 
 	return 0;
