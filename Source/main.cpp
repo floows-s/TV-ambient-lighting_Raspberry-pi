@@ -227,10 +227,11 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 		std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
 
 		// If the current ZoneSide is top of right -> loop through zones in reverse
-		bool reverseLoop = (zoneSide == ZoneSide::TOP || zoneSide == ZoneSide::RIGHT); 
-		int start = (reverseLoop ? zones.size() - 1 : 0);
-		int end = (reverseLoop ? -1 : zones.size() - 1);
+		bool reverseLoop = false; (zoneSide == ZoneSide::TOP || zoneSide == ZoneSide::RIGHT);
+		int start = (reverseLoop ? zones.size() : 0);
+		int end = (reverseLoop ? -1 : zones.size());
 		int step = (reverseLoop ? -1 : 1);
+
 		cv::Vec3b color;
 		if (zoneSide == ZoneSide::RIGHT) {
 			color = redColor;
