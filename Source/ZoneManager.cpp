@@ -8,6 +8,7 @@
 #include "LEDCounts.h"
 
 #include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
 
 ZoneManager::ZoneManager(LEDCounts LEDCounts, Dimensions frameDimensions)
 	: m_LEDCounts(LEDCounts), m_frameDimensions(frameDimensions), m_zones(this->generateZones()){ }
@@ -26,10 +27,10 @@ std::map<ZoneSide, std::vector<Zone>> ZoneManager::generateZones() const {
 	};
 
 	for (ZoneSide side : sidesToInclude) {
-		cv::Vec3b redColor(0, 0, 255);
-		cv::Vec3b blueColor(255, 0, 0);
-		cv::Vec3b greenColor(0, 255, 0);
-		cv::Vec3b yellowColor(0, 255, 255);
+		const cv::Vec3b redColor(0, 0, 255);
+		const cv::Vec3b blueColor(255, 0, 0);
+		const cv::Vec3b greenColor(0, 255, 0);
+		const cv::Vec3b yellowColor(0, 255, 255);
 
 		// Set LEDCount and borderColor and calculate dimension based on ZoneSide
 		int LEDCount;
@@ -120,8 +121,18 @@ void ZoneManager::draw(const cv::Mat& frame, bool includeAverageColor) {
 	}
 
 	for (const auto& [side, zones] : this->m_zones) {
+		int zone_i = 1;
 		for (const Zone& zone : zones) {
 			zone.draw(frame, includeAverageColor);
+
+			// TODO: REMOVE! | DEBUGGING
+			cv::Point middleOfZone(
+				zone.getOrigin().x + zone.getWidth() / 2,
+				zone.getOrigin().y + zone.getHeight() / 2
+			);
+			cv::putText(frame, "" + zone_i, middleOfZone, 0, 8, cv::Scalar(0,0,0));
+
+			zone_i++;
 		}
 	}
 }
