@@ -44,7 +44,7 @@ std::vector<cv::Vec3b> DEBUG_generateRainbowColors(int numColors) {
 
 	for (int i = 0; i < numColors; ++i) {
 		// Hue ranges from 0-240 (red -> violet) in OpenCV HSV
-		float hue = (float)i / (numColors - 1) * 240.0f;
+		float hue = (float)i / (numColors - 1) * 150.0f;
 		cv::Mat hsv(1, 1, CV_8UC3, cv::Vec3b((uchar)hue, 255, 255));
 		cv::Mat bgr;
 		cv::cvtColor(hsv, bgr, cv::COLOR_HSV2BGR);
