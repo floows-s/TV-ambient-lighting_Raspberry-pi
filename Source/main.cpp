@@ -214,20 +214,39 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
     *   > ----------
 	*			 END (Right bottom)
 	*/
+	const cv::Vec3b redColor(0, 0, 255);
+	const cv::Vec3b blueColor(255, 0, 0);
+	const cv::Vec3b greenColor(0, 255, 0);
+	const cv::Vec3b yellowColor(0, 255, 255);
 
 	ZoneSide zoneOrder[] = { ZoneSide::RIGHT, ZoneSide::TOP, ZoneSide::LEFT, ZoneSide::BOTTOM };
 
 	int ledsStartPosition = 0;
 	for (ZoneSide zoneSide : zoneOrder) {
-		const std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
+		// TODO: change this back to const
+		std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
 
 		// If the current ZoneSide is top of right -> loop through zones in reverse
 		bool reverseLoop = (zoneSide == ZoneSide::TOP || zoneSide == ZoneSide::RIGHT); 
 		int start = (reverseLoop ? zones.size() - 1 : 0);
 		int end = (reverseLoop ? -1 : zones.size() - 1);
 		int step = (reverseLoop ? -1 : 1);
+		cv::Vec3b color;
+		if (zoneSide == ZoneSide::RIGHT) {
+			color = redColor;
+		}
+		if (zoneSide == ZoneSide::LEFT) {
+			color = blueColor;
+		}
+		if (zoneSide == ZoneSide::TOP) {
+			color = greenColor;
+		}
+		if (zoneSide == ZoneSide::BOTTOM) {
+			color = yellowColor;
+		}
 
 		for (int i = start; i != end; i += step) {
+			zones[i].DEBUG_SETLASTCALCULATEDAVERAGECOLOR(color);
 			ledStrip.channel[0].leds[ledsStartPosition + i] = BGRToWRGBHex(
 				zones[i].getLastCalculatedAverageColor()
 			);
