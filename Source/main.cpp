@@ -247,7 +247,7 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 		}
 
 		for (int i = start; i != end; i += step) {
-			zones[i].DEBUG_SETLASTCALCULATEDAVERAGECOLOR(color);
+			//zones[i].DEBUG_SETLASTCALCULATEDAVERAGECOLOR(color);
 			ledStrip.channel[0].leds[ledsStartPosition + i] = BGRToWRGBHex(
 				zones[i].getLastCalculatedAverageColor()
 			);
