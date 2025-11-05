@@ -227,7 +227,7 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 		std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
 
 		// If the current ZoneSide is top of right -> loop through zones in reverse
-		bool reverseLoop = false; (zoneSide == ZoneSide::TOP || zoneSide == ZoneSide::RIGHT);
+		bool reverseLoop = (zoneSide == ZoneSide::TOP);
 		int start = (reverseLoop ? zones.size() : 0);
 		int end = (reverseLoop ? -1 : zones.size());
 		int step = (reverseLoop ? -1 : 1);
