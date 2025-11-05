@@ -26,10 +26,10 @@ namespace Config {
 	const int VIDEO_CAPTURE_INDEX = 0;
 
 	const LEDCounts LED_COUNTS = { 
-		.top = 14, 
-		.bottom = 15, 
-		.left = 10, 
-		.right = 9 
+		.top = 14,
+		.bottom = 14,
+		.left = 9,
+		.right = 10
 	};
 
 	/*

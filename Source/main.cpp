@@ -215,7 +215,7 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 	*			 END (Right bottom)
 	*/
 
-	ZoneSide zoneOrder[] = { ZoneSide::LEFT, ZoneSide::TOP, ZoneSide::RIGHT, ZoneSide::BOTTOM };
+	ZoneSide zoneOrder[] = { ZoneSide::RIGHT, ZoneSide::TOP, ZoneSide::LEFT, ZoneSide::BOTTOM };
 
 	int ledsStartPosition = 0;
 	for (ZoneSide zoneSide : zoneOrder) {
