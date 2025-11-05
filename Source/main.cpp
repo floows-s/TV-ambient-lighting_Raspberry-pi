@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <functional>
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -174,20 +175,23 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 
 	ZoneSide zoneOrder[] = { ZoneSide::LEFT, ZoneSide::TOP, ZoneSide::RIGHT, ZoneSide::BOTTOM };
 
-	int startPosition = 0;
+	int ledsStartPosition = 0;
 	for (ZoneSide zoneSide : zoneOrder) {
-
 		const std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
 
-		// TODO: Reverse when on left
-		for (int i = 0; i < zones.size(); i++) {
-			//leds[i] < 0xWWRRGGBB
-			ledStrip.channel[0].leds[startPosition + i] = BGRToWRGBHex(
+		// If the current ZoneSide is top of right -> loop through zones in reverse
+		bool reverseLoop = (zoneSide == ZoneSide::TOP || zoneSide == ZoneSide::RIGHT); 
+		int start = (reverseLoop ? zones.size() - 1 : 0);
+		int end = (reverseLoop ? 0 : zones.size() - 1);
+		int step = (reverseLoop ? -1 : 1);
+
+		for (int i = start; i != end; i += step) {
+			ledStrip.channel[0].leds[ledsStartPosition + i] = BGRToWRGBHex(
 				zones[i].getLastCalculatedAverageColor()
 			);
 		}
 
-		startPosition += (zones.size() - 1);
+		int ledsStartPosition = (zones.size() - 1);
 	}
 }
 
