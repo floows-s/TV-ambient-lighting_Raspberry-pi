@@ -43,7 +43,7 @@ std::vector<cv::Vec3b> DEBUG_generateRainbowColors(int numColors) {
 	colors.reserve(numColors);
 
 	for (int i = 0; i < numColors; ++i) {
-		// Hue ranges from 0–240 (red -> violet) in OpenCV HSV
+		// Hue ranges from 0-240 (red -> violet) in OpenCV HSV
 		float hue = (float)i / (numColors - 1) * 240.0f;
 		cv::Mat hsv(1, 1, CV_8UC3, cv::Vec3b((uchar)hue, 255, 255));
 		cv::Mat bgr;
@@ -58,18 +58,17 @@ std::vector<cv::Vec3b> DEBUG_generateRainbowColors(int numColors) {
 void DEBUG_setRainbowColors(ZoneManager& zoneManager) {
 	ZoneSide zoneSides[] = { ZoneSide::LEFT, ZoneSide::TOP, ZoneSide::RIGHT, ZoneSide::BOTTOM };
 
-	std::vector<cv::Vec3b> colors = DEBUG_generateRainbowColors(Config::LED_COUNTS.all());
 
 	int startPos = 0;
 	for (ZoneSide zoneSide : zoneSides) {
 		std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
-		
+
+		std::vector<cv::Vec3b> colors = DEBUG_generateRainbowColors(zones.size());
 
 		for (int i = 0; i < zones.size(); i++) {
-			zones[i].DEBUG_SETLASTCALCULATEDAVERAGECOLOR(colors[startPos + i]);
+			zones[i].DEBUG_SETLASTCALCULATEDAVERAGECOLOR(colors[i]);
 		}
 
-		startPos += zones.size() - 1;
 	}
 }
 

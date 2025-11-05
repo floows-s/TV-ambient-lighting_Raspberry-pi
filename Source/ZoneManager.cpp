@@ -127,10 +127,10 @@ void ZoneManager::draw(const cv::Mat& frame, bool includeAverageColor) {
 
 			// TODO: REMOVE! | DEBUGGING
 			cv::Point middleOfZone(
-				zone.getOrigin().x + zone.getWidth() / 2,
+				zone.getOrigin().x,
 				zone.getOrigin().y + zone.getHeight() / 2
 			);
-			cv::putText(frame, "" + zone_i, middleOfZone, 0, 8, cv::Scalar(0,0,0));
+			cv::putText(frame, "" + zone_i, middleOfZone, 0, 1, cv::Scalar(0,0,0));
 
 			zone_i++;
 		}
