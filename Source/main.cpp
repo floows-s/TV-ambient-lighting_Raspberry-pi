@@ -224,7 +224,7 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 		// If the current ZoneSide is top of right -> loop through zones in reverse
 		bool reverseLoop = (zoneSide == ZoneSide::TOP || zoneSide == ZoneSide::RIGHT); 
 		int start = (reverseLoop ? zones.size() - 1 : 0);
-		int end = (reverseLoop ? 0 : zones.size() - 1);
+		int end = (reverseLoop ? -1 : zones.size() - 1);
 		int step = (reverseLoop ? -1 : 1);
 
 		for (int i = start; i != end; i += step) {
@@ -233,7 +233,7 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 			);
 		}
 
-		ledsStartPosition += (zones.size() - 1);
+		ledsStartPosition += zones.size();
 	}
 }
 
