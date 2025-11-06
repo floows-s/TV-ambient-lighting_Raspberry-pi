@@ -129,7 +129,7 @@ int main() {
 /// It also "turns-off" the led-strip.
 /// </summary>
 /// <param name="signal">The signal that triggerd this handler. -1 if its not done by an signal.</param>
-void handleProgramTermination(int signal = -1) {
+void handleProgramTermination(int signal) {
 	if (signal != -1) {
 		std::cout << "Recieved signal: " << signal << std::endl;
 	}
