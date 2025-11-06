@@ -35,6 +35,9 @@ namespace Config {
 	/*
 	* Down below is data pased to the library controlling the led-strip.
 	*/
+
+	
+	const uint8_t LED_BRIGHTNESS = 128; // A value of 0 - 255
 	const int DATA_OUT_GPIO_PIN = 18;
 	const uint32_t TARGET_FREQ = WS2811_TARGET_FREQ;
 	const int DMA = 10;

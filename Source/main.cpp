@@ -2,6 +2,7 @@
 #include <chrono>
 #include <thread>
 #include <functional>
+#include <signal.h>
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
@@ -16,6 +17,7 @@
 #include "const_config.h"
 
 #define DEBUG true
+#define DEBUG_WINDOW false
 
 ws2811_t ledStrip =
 {
@@ -28,28 +30,33 @@ ws2811_t ledStrip =
 			.invert = 0,
 			.count = Config::LED_COUNTS.all(),
 			.strip_type = Config::STRIP_TYPE,
-			.brightness = 128,
+			.brightness = Config::LED_BRIGHTNESS
 		}
 	}
 };
 
+cv::VideoCapture vCap(Config::VIDEO_CAPTURE_INDEX, cv::CAP_ANY);
+
+void handleProgramTermination(int signal);
 bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame);
 bool handleRenderLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
 void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
 int BGRToWRGBHex(cv::Vec3b color);
 
 int main() {
-	ws2811_init(&ledStrip);
+	std::cout << "Welcome! TV ambient ligthing (raspberry pi) Creds: Floows" << std::endl;
 
-	cv::VideoCapture vCap(Config::VIDEO_CAPTURE_INDEX, cv::CAP_ANY);
+	// --- Setup ---
 	cv::Mat frame;
 
-#if DEBUG
-	const std::string windowName = "TV ambient lighting (Raspberry pi) - DEBUG";
-	cv::namedWindow(windowName);
-#endif
+	ws2811_init(&ledStrip);
 
-	// Start-up loop
+	signal(SIGTERM, handleProgramTermination);
+	signal(SIGINT, handleProgramTermination);
+	signal(SIGABRT, handleProgramTermination);
+	signal(SIGFPE, handleProgramTermination);
+
+	// --- Start-up (loop) ---
 	std::cout << "Entering start-up loop. Waiting for capture card signal..." << std::endl;
 	while (!handleCaptureCard(vCap, frame)) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(50)); // <- do not overload the thread and CPU unnecessarily
@@ -59,21 +66,27 @@ int main() {
 	// Init manager and create zones for calculating the average color
 	ZoneManager zoneManager(Config::LED_COUNTS, Dimensions(frame.cols, frame.rows));
 
-	// Main loop
-	std::cout << "Entering main loop..." << std::endl;
-
 #if DEBUG
+
+#if DEBUG_WINDOW
+	const std::string windowName = "TV ambient lighting (Raspberry pi) - DEBUG";
+	cv::namedWindow(windowName);
+#endif
 	// Used for calculating average loop time
 	uint64_t loopCounter = 0; // Dont worry this will only overflow in about 51 milion years ;)
 	double averageLoopTimeMS = 0.0;
 #endif
 
+	// --- Main loop ---
+	std::cout << "Entering main loop..." << std::endl;
 	bool running = true;
 	while (running) {
+
 #if DEBUG
 		loopCounter++;
 		auto startTime = std::chrono::high_resolution_clock::now();
 #endif
+
 		// Get frame from capture card
 		if (!handleCaptureCard(vCap, frame)) {
 			std::cout << "Can't get frame from capture card, retrying..." << std::endl;
@@ -83,37 +96,53 @@ int main() {
 
 		// Calculate averages in zones
 		zoneManager.calculateAverages(frame);
-#if DEBUG
-		// Draw for debugging
-		zoneManager.draw(frame, true);
-#endif
+
 		// Set calculated colors and render led-strip
 		handleRenderLedStrip(ledStrip, zoneManager);
 
 #if DEBUG
+		// Draw for debugging
+		zoneManager.draw(frame, true);
+
 		// Calculate incremental average loop time
 		auto endTime = std::chrono::high_resolution_clock::now();
 		float deltaTimeInMS = std::chrono::duration<float, std::milli>(endTime - startTime).count();
 		averageLoopTimeMS += (deltaTimeInMS - averageLoopTimeMS) / loopCounter;
 		std::cout << "Average loop time: " << averageLoopTimeMS << "MS" << std::endl;
 
+#if DEBUG_WINDOW
 		cv::imshow(windowName, frame);
 		char pressedKey = cv::waitKey(1); // <- Is needed to handle OpenCV GUI events (like imshow) (I know its stupid, waitKey??)
 		if (pressedKey == 'q' || pressedKey == 'Q') running = false;
 #endif
+#endif
+
 	}
 
-	std::cout << "Out of main loop" << std::endl;
+	std::cout << "Out of main loop!" << std::endl;
+	handleProgramTermination(-1);
+
+	return 0;
+}
+
+/// <summary>
+/// This function cleans up some things before exiting the program.
+/// It also "turns-off" the led-strip.
+/// </summary>
+void handleProgramTermination(int signal) {
+	std::cout << "Program terminating..." << std::endl;
+
+	// Video capture
 	std::cout << "Releasing VideoCapture..." << std::endl;
 	vCap.release();
 
-	// TODO hook into shutdown or SIGKILL and make led strip off
-	std::cout << "Releasing led-strip..." << std::endl;
+	// Led-strip
+	std::cout << "Releasing and turning off led-strip..." << std::endl;
 	ledStrip.channel[0].brightness = 0; // Easy way to turn off all leds
 	ws2811_render(&ledStrip);
 	ws2811_fini(&ledStrip);
 
-	return 0;
+	std::cout << "Goodbye! Creds: Floows" << std::endl;
 }
 
 
