@@ -37,7 +37,7 @@ ws2811_t ledStrip =
 
 cv::VideoCapture vCap(Config::VIDEO_CAPTURE_INDEX, cv::CAP_ANY);
 
-void handleProgramTermination(int signal);
+void handleProgramTermination(int signal = -1);
 bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame);
 bool handleRenderLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
 void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
@@ -51,8 +51,8 @@ int main() {
 
 	ws2811_init(&ledStrip);
 
-	signal(SIGTERM, handleProgramTermination);
 	signal(SIGINT, handleProgramTermination);
+	signal(SIGTERM, handleProgramTermination);
 	signal(SIGABRT, handleProgramTermination);
 	signal(SIGFPE, handleProgramTermination);
 
@@ -116,11 +116,10 @@ int main() {
 		if (pressedKey == 'q' || pressedKey == 'Q') running = false;
 #endif
 #endif
-
 	}
 
 	std::cout << "Out of main loop!" << std::endl;
-	handleProgramTermination(-1);
+	handleProgramTermination();
 
 	return 0;
 }
@@ -129,7 +128,11 @@ int main() {
 /// This function cleans up some things before exiting the program.
 /// It also "turns-off" the led-strip.
 /// </summary>
-void handleProgramTermination(int signal) {
+/// <param name="signal">The signal that triggerd this handler. -1 if its not done by an signal.</param>
+void handleProgramTermination(int signal = -1) {
+	if (signal != -1) {
+		std::cout << "Recieved signal: " << signal << std::endl;
+	}
 	std::cout << "Program terminating..." << std::endl;
 
 	// Video capture
@@ -143,6 +146,7 @@ void handleProgramTermination(int signal) {
 	ws2811_fini(&ledStrip);
 
 	std::cout << "Goodbye! Creds: Floows" << std::endl;
+	exit(EXIT_SUCCESS);
 }
 
 
