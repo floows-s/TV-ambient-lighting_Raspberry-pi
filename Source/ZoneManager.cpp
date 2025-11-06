@@ -121,18 +121,8 @@ void ZoneManager::draw(const cv::Mat& frame, bool includeAverageColor) {
 	}
 
 	for (const auto& [side, zones] : this->m_zones) {
-		int zone_i = 1;
 		for (const Zone& zone : zones) {
 			zone.draw(frame, includeAverageColor);
-
-			// TODO: REMOVE! | DEBUGGING
-			cv::Point textPoint(
-				zone.getOrigin().x,
-				zone.getOrigin().y + zone.getHeight() / 2
-			);
-			cv::putText(frame, std::to_string(zone_i), textPoint, 0, 1, cv::Scalar(0, 0, 0));
-
-			zone_i++;
 		}
 	}
 }

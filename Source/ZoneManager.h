@@ -1,10 +1,10 @@
 #pragma once
 #include <map>
 
+#include <opencv2/core.hpp>
+
 #include "Zone.h"
 #include "LEDCounts.h"
-
-#include <opencv2/core.hpp>
 
 enum class ZoneSide {
 	TOP,
@@ -30,8 +30,7 @@ public:
 
 	// Getters & setters
 	const std::map<ZoneSide, std::vector<Zone>>& getZones() { return m_zones; }
-	// TODO: change back to const
-	std::vector<Zone>& getZonesBySide(ZoneSide side) { return m_zones[side]; }
+	const std::vector<Zone>& getZonesBySide(ZoneSide side) { return m_zones[side]; }
 
 	int getFrameWidth() const { return m_frameDimensions.width; }
 	int getFrameHeight() const { return m_frameDimensions.height; }

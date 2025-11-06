@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <chrono>
 #include <thread>
 #include <functional>
@@ -37,43 +37,6 @@ bool handleRenderLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
 void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
 int BGRToWRGBHex(cv::Vec3b color);
 
-// TODO: remove this!
-std::vector<cv::Vec3b> DEBUG_generateRainbowColors(int numColors) {
-	std::vector<cv::Vec3b> colors;
-	colors.reserve(numColors);
-
-	for (int i = 0; i < numColors; ++i) {
-		// Hue ranges from 0-240 (red -> violet) in OpenCV HSV
-		float hue = (float)i / (numColors - 1) * 150.0f;
-		cv::Mat hsv(1, 1, CV_8UC3, cv::Vec3b((uchar)hue, 255, 255));
-		cv::Mat bgr;
-		cv::cvtColor(hsv, bgr, cv::COLOR_HSV2BGR);
-		colors.push_back(bgr.at<cv::Vec3b>(0, 0));
-	}
-
-	return colors;
-}
-
-// TODO: remove this!
-void DEBUG_setRainbowColors(ZoneManager& zoneManager) {
-	ZoneSide zoneSides[] = { ZoneSide::LEFT, ZoneSide::TOP, ZoneSide::RIGHT, ZoneSide::BOTTOM };
-
-
-	int startPos = 0;
-	for (ZoneSide zoneSide : zoneSides) {
-		std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
-
-		std::vector<cv::Vec3b> colors = DEBUG_generateRainbowColors(zones.size());
-
-		for (int i = 0; i < zones.size(); i++) {
-			zones[i].DEBUG_SETLASTCALCULATEDAVERAGECOLOR(colors[i]);
-		}
-
-	}
-}
-
-
-
 int main() {
 	ws2811_init(&ledStrip);
 
@@ -93,9 +56,6 @@ int main() {
 
 	// Init manager and create zones for calculating the average color
 	ZoneManager zoneManager(Config::LED_COUNTS, Dimensions(frame.cols, frame.rows));
-
-	// TODO: remove this!
-	//DEBUG_setRainbowColors(zoneManager);
 
 	// Main loop
 	std::cout << "Entering main loop..." << std::endl;
@@ -184,9 +144,10 @@ bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame) {
 /// <param name="zoneManager">A reference to the ZoneManager.</param>
 bool handleRenderLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 	setColorsOnLedStrip(ledStrip, zoneManager);
+
 	ws2811_return_t result = ws2811_render(&ledStrip);
 	if (result != ws2811_return_t::WS2811_SUCCESS) {
-		std::cout << "Can't render led-strip! Eror code: " << result << std::endl;
+		std::cout << "Can't render led-strip! Error code: " << result << std::endl;
 		return false;
 	}
 
@@ -204,65 +165,52 @@ void setColorsOnLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager) {
 	* due to lack of motivation to finish this project properly
 	* because i have bigger projects i want to work, the flow direction is static...
 	* 
-	* If anyone looking at this and has nothing to do, and wants to implement this i would thank you!
-	* I would suggest doing something with the ZoneSide enum in a array as a var in the const_config file.
+	* If anyone is reading this and has nothing to do, and wants to implement a way to set your own flow, i would thank you!
+	* I would suggest doing something with the ZoneSide enum in a array as a var like FLOW_DIRECTION in the const_config file.
+	* And then figure out when you need to reverse loop over the zones like i have done with the TOP and RIGHT side down belowe.
 	* 
-	* For now the flow is (looking infront of the screen): 
+	* For now the flow of the LED-strip (looking infront of the screen): 
 	*   v ---------- <
     *   |            |
     *   |            | START (Right bottom)
     *   > ----------
 	*			 END (Right bottom)
+	* 
+	* The order / direction of the zones:
+	*    ---------->
+	*   |            |
+	*   |            | 
+	*   v ---------> v
 	*/
-	const cv::Vec3b redColor(0, 0, 255);
-	const cv::Vec3b blueColor(255, 0, 0);
-	const cv::Vec3b greenColor(0, 255, 0);
-	const cv::Vec3b yellowColor(0, 255, 255);
 
-	ZoneSide zoneOrder[] = { ZoneSide::RIGHT, ZoneSide::TOP, ZoneSide::LEFT, ZoneSide::BOTTOM };
-
+	const ZoneSide flowDirection[] = { ZoneSide::RIGHT, ZoneSide::TOP, ZoneSide::LEFT, ZoneSide::BOTTOM };
 	int ledIndex = 0;
-	for (ZoneSide zoneSide : zoneOrder) {
-		// TODO: change this back to const
-		std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
 
-		// If the current ZoneSide is top of right -> loop through zones in reverse
+	for (ZoneSide zoneSide : flowDirection) {
+		const std::vector<Zone>& zones = zoneManager.getZonesBySide(zoneSide);
+
+		// If the current ZoneSide is top or right -> loop through zones in reverse
 		bool reverseLoop = (zoneSide == ZoneSide::TOP || zoneSide == ZoneSide::RIGHT);
 		int start = (reverseLoop ? zones.size() - 1 : 0);
-		int end = (reverseLoop ? -1 : zones.size());// Note: past the last-index
+		int end = (reverseLoop ? -1 : zones.size()); // Note: past the last-index
 		int step = (reverseLoop ? -1 : 1);
 
-		cv::Vec3b color;
-		if (zoneSide == ZoneSide::RIGHT) {
-			color = redColor;
-		}
-		if (zoneSide == ZoneSide::LEFT) {
-			color = blueColor;
-		}
-		if (zoneSide == ZoneSide::TOP) {
-			color = greenColor;
-		}
-		if (zoneSide == ZoneSide::BOTTOM) {
-			color = yellowColor;
-		}
-
 		for (int i = start; i != end; i += step) {
-			//zones[i].DEBUG_SETLASTCALCULATEDAVERAGECOLOR(color);
 			ledStrip.channel[0].leds[ledIndex] = BGRToWRGBHex(
 				zones[i].getLastCalculatedAverageColor()
 			);
+
 			ledIndex++;
 		}
 	}
 }
 
-// TODO UPDATE SUMARRY!
 /// <summary>
-/// Converts a BGR value to a RGB hex value.
-/// Note: White is also included but set to 0.
+/// Converts a BGR value to a WBGR hex value.
+/// Note: White is included but set to 0.
 /// </summary>
 /// <param name="color">The color to be converted.</param>
-/// <returns>The WRGB hex value.</returns>
+/// <returns>The WBGR hex value.</returns>
 int BGRToWRGBHex(cv::Vec3b color) {
 	//		  White			Blue 			   Green		   Red
 	return ((0 << 24) | (color[0] << 16) | (color[1] << 8) | color[2]);
