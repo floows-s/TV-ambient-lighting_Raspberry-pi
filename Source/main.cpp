@@ -15,6 +15,8 @@
 #include "LEDCounts.h"
 #include "const_config.h"
 
+#define DEBUG true;
+
 ws2811_t ledStrip =
 {
 	.freq = Config::TARGET_FREQ,
@@ -43,9 +45,10 @@ int main() {
 	cv::VideoCapture vCap(Config::VIDEO_CAPTURE_INDEX, cv::CAP_ANY);
 	cv::Mat frame;
 
-	// Init test window
-	const std::string windowName = "TV ambient lighting (Raspberry pi)";
+#if DEBUG
+	const std::string windowName = "TV ambient lighting (Raspberry pi) - DEBUG";
 	cv::namedWindow(windowName);
+#endif
 
 	// Start-up loop
 	std::cout << "Entering start-up loop. Waiting for capture card signal..." << std::endl;
@@ -59,14 +62,19 @@ int main() {
 
 	// Main loop
 	std::cout << "Entering main loop..." << std::endl;
+
+#if DEBUG
+	// Used for calculating average loop time
 	uint64_t loopCounter = 0; // Dont worry this will only overflow in about 51 milion years ;)
 	double averageLoopTimeMS = 0.0;
+#endif
 
 	bool running = true;
 	while (running) {
+#if DEBUG
 		loopCounter++;
 		auto startTime = std::chrono::high_resolution_clock::now();
-
+#endif
 		// Get frame from capture card
 		if (!handleCaptureCard(vCap, frame)) {
 			std::cout << "Can't get frame from capture card, retrying..." << std::endl;
@@ -76,13 +84,14 @@ int main() {
 
 		// Calculate averages in zones
 		zoneManager.calculateAverages(frame);
-
+#if DEBUG
 		// Draw for debugging
 		zoneManager.draw(frame, true);
-
+#endif
 		// Set calculated colors and render led-strip
 		handleRenderLedStrip(ledStrip, zoneManager);
 
+#if DEBUG
 		// Calculate incremental average loop time
 		auto endTime = std::chrono::high_resolution_clock::now();
 		float deltaTimeInMS = std::chrono::duration<float, std::milli>(endTime - startTime).count();
@@ -92,6 +101,7 @@ int main() {
 		cv::imshow(windowName, frame);
 		char pressedKey = cv::waitKey(1); // <- Is needed to handle OpenCV GUI events (like imshow) (I know its stupid, waitKey??)
 		if (pressedKey == 'q' || pressedKey == 'Q') running = false;
+#endif
 	}
 
 	std::cout << "Out of main loop" << std::endl;
