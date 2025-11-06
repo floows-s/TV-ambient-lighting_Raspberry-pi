@@ -15,7 +15,7 @@
 #include "LEDCounts.h"
 #include "const_config.h"
 
-#define DEBUG true;
+#define DEBUG true
 
 ws2811_t ledStrip =
 {
@@ -32,7 +32,6 @@ ws2811_t ledStrip =
 		}
 	}
 };
-
 
 bool handleCaptureCard(cv::VideoCapture& vCap, cv::Mat& frame);
 bool handleRenderLedStrip(ws2811_t& ledStrip, ZoneManager& zoneManager);
