@@ -38,7 +38,7 @@ unzip opencv.zip
 sudo rm -rf opencv.zip
 cd opencv-4.x
 mkdir -p build && cd build
-cmake -D BUILD_SHARED=OFF ..
+cmake -D BUILD_SHARED_LIBS=OFF ..
 cmake --build .
 cd ../../../
 
