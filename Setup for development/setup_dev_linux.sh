@@ -6,7 +6,7 @@ echo "Installing cmake..."
 sudo apt install -y cmake
 
 # --- Librarys ---
-mkdir ../Librarys/ && cd ../Librarys
+mkdir ../Librarys && cd ../Librarys
 
 # rpi_ws2811x
 echo "Installing and building rpi_ws281x..."
@@ -35,12 +35,14 @@ sudo apt install -y g++ wget unzip
 cd ../Librarys
 wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip
 unzip opencv.zip
+sudo rm -rf opencv.zip
 cd opencv-4.x
 mkdir -p build && cd build
 cmake -D BUILD_SHARED=OFF ..
-cmake --build
-cd ../../
+cmake --build .
+cd ../../../
 
+# --- Project ---
 echo "Everything is installed!" 
 echo "Building project..."
 mkdir Build && cd Build
