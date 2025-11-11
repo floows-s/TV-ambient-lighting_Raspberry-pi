@@ -17,7 +17,7 @@ cmake -D BUILD_SHARED=OFF ..
 cmake --build .
 cd ../../
 
-# opencv
+# OpenCV
 echo "About to install and build OpenCV..."
 echo "The OpenCV lib takes a long time to build on a raspberry pi! It took me more than a few hours."
 while true; do
@@ -33,6 +33,8 @@ done
 sudo apt install -y libgtk2.0-dev pkg-config 
 sudo apt install -y g++ wget unzip
 cd ../Librarys
+
+# Download and build
 wget -O opencv.zip https://github.com/opencv/opencv/archive/4.x.zip
 unzip opencv.zip
 sudo rm -rf opencv.zip

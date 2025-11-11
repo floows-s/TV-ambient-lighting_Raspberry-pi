@@ -19,7 +19,18 @@ list(
 add_executable(TV_ambient_lighting_rasppi ${SOURCE_FILES})
 
 # -- OPENCV --
-find_package(OpenCV REQUIRED)
+set(OPENCV_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Librarys/opencv-4.x")
+set(OPENCV_BUILD_DIR "${OPENCV_DIR}/build")
+
+# Check before looking for package
+if(NOT EXISTS OPENCV_DIR) 
+    message(FATAL_ERROR "Can't find OpenCV directory Have you ran the setup script yet? Looking for it at: ${OPENCV_DIR}")
+endif()
+if(NOT EXISTS OPENCV_BUILD_DIR) 
+    message(FATAL_ERROR "Can't find OpenCV build directory Have you build the library yet? Looking for it at: ${OPENCV_BUILD_DIR}")
+endif()
+
+find_package(OpenCV REQUIRED PATHS OPENCV_DIR NO_DEFAULT_PATH) # Manualy set path to look for OpenCV, otherwise it cant find it...
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(TV_ambient_lighting_rasppi ${OpenCV_LIBS})
 
@@ -30,7 +41,11 @@ set(RPI_WS281X_LIB "${RPI_WS281X_DIR}/build/libws2811.a")
 target_include_directories(TV_ambient_lighting_rasppi PRIVATE "${RPI_WS281X_DIR}")
 
 if(UNIX)
-    if(NOT RPI_WS281X_LIB) 
+    if(NOT EXISTS RPI_WS281X_DIR) 
+        message(FATAL_ERROR "Can't find rpi_ws281x folder. Have you ran the setup script yet? Looking for it at: ${RPI_WS281X_DIR}")
+    endif()
+
+    if(NOT EXISTS RPI_WS281X_LIB) 
         message(FATAL_ERROR "Can't find libws2811.a! Have you build the library yet? Looking for it at: ${RPI_WS281X_LIB}")
     endif()
     target_link_libraries(TV_ambient_lighting_rasppi ${RPI_WS281X_LIB})
