@@ -22,8 +22,7 @@ add_executable(TV_ambient_lighting_rasppi ${SOURCE_FILES})
 set(OPENCV_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Librarys/opencv-4.x")
 set(OPENCV_BUILD_DIR "${OPENCV_DIR}/build")
 
-# Check before looking for package
-if(NOT EXISTS OPENCV_DIR) 
+if(NOT IS_DIRECTORY OPENCV_DIR) 
     message(FATAL_ERROR "Can't find OpenCV directory Have you ran the setup script yet? Looking for it at: ${OPENCV_DIR}")
 endif()
 if(NOT EXISTS OPENCV_BUILD_DIR) 
@@ -38,16 +37,16 @@ target_link_libraries(TV_ambient_lighting_rasppi ${OpenCV_LIBS})
 set(RPI_WS281X_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Librarys/rpi_ws281x")
 set(RPI_WS281X_LIB "${RPI_WS281X_DIR}/build/libws2811.a")
 
+if(NOT IS_DIRECTORY RPI_WS281X_DIR) 
+    message(FATAL_ERROR "Can't find rpi_ws281x folder. Have you ran the setup script yet? Looking for it at: ${RPI_WS281X_DIR}")
+endif()
 target_include_directories(TV_ambient_lighting_rasppi PRIVATE "${RPI_WS281X_DIR}")
 
 if(UNIX)
-    if(NOT EXISTS RPI_WS281X_DIR) 
-        message(FATAL_ERROR "Can't find rpi_ws281x folder. Have you ran the setup script yet? Looking for it at: ${RPI_WS281X_DIR}")
-    endif()
-
     if(NOT EXISTS RPI_WS281X_LIB) 
         message(FATAL_ERROR "Can't find libws2811.a! Have you build the library yet? Looking for it at: ${RPI_WS281X_LIB}")
     endif()
+
     target_link_libraries(TV_ambient_lighting_rasppi ${RPI_WS281X_LIB})
 else()
     message("Non-unix platform detected: Not linking rpi_ws281x library! (Headers are included)")
