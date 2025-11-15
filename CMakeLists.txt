@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 set(CMAKE_CXX_STANDARD 20)
 project(TV_ambient_lighting_rasppi)
+include(CPack)
 
 # -- PROJECT FILES -- 
 set(SOURCE_DIR ./Source)
@@ -51,3 +52,4 @@ if(UNIX)
 else()
     message("Non-unix platform detected: Not linking rpi_ws281x library! (Headers are included)")
 endif()
+
