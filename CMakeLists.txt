@@ -29,7 +29,8 @@ set(OPENCV_BUILD_DIR "${OPENCV_DIR}/build")
 #    message(FATAL_ERROR "Can't find OpenCV build directory Have you build the library yet? Looking for it at: ${OPENCV_BUILD_DIR}")
 #endif()
 
-include("${OPENCV_BUILD_DIR}/OpenCVConfig.cmake"  REQUIRED) # Manualy set path to look for OpenCV, otherwise it cant find it...
+#include("${OPENCV_BUILD_DIR}/OpenCVConfig.cmake"  REQUIRED) # Manualy set path to look for OpenCV, otherwise it cant find it...
+find_package("OpenCV")
 include_directories(${OpenCV_INCLUDE_DIRS})
 target_link_libraries(TV_ambient_lighting_rasppi ${OpenCV_LIBS})
 
